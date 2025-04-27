@@ -24,8 +24,8 @@ click==8.1.7
 cohere==5.11.1
 colorama==0.4.6
 coloredlogs==15.0.1
-crewai==0.76.2
-crewai-tools==0.13.2
+crewai>=0.76.2
+crewai-tools>=0.13.2
 cryptography==43.0.3
 dataclasses-json==0.6.7
 decorator==5.1.1
@@ -92,7 +92,7 @@ lancedb==0.14.0
 langchain==0.3.4
 langchain-cohere==0.3.1
 langchain-community==0.3.3
-langchain-core==0.3.12
+langchain-core>=0.2.30
 langchain-experimental==0.3.2
 langchain-openai==0.2.3
 langchain-text-splitters==0.3.0
