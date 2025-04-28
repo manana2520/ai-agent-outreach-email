@@ -36,7 +36,6 @@ docker==7.1.0
 docstring-parser==0.16
 docx2txt==0.8
 durationpy==0.9
-embedchain==0.1.123
 exceptiongroup==1.2.2
 executing==2.1.0
 fastapi==0.115.2
