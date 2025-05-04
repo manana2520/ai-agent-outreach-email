@@ -19,7 +19,8 @@ GITHUB_URL="https://github.com/manana2520/ai-agent-outreach-email"
 GITHUB_BRANCH="main"
 AGENT_ENTRYPOINT="src/sales_personalized_email/main.py"
 # WARNING: Hardcoded token - consider using env variables or secrets in production
-AGENT_API_TOKEN="***REMOVED***"
+# Using environment variable from .env file now
+# AGENT_API_TOKEN="cLk0F4WLXRdH1ynJt1KMeNmtwV14WM3j"
 
 # Agent input data (adjust as needed)
 AGENT_INPUT_JSON=$(cat <<EOF
