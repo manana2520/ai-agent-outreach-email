@@ -219,7 +219,7 @@ log "Deleting existing AIAgentRuntime: $AGENT_NAME..."
 kubectl delete aiagentruntime "$AGENT_NAME" -n "$NAMESPACE" --ignore-not-found
 
 # --- PAUSE ADDED ---
-read -p "Existing runtime deleted (if any). Press Enter to continue creating the new runtime..."
+#read -p "Existing runtime deleted (if any). Press Enter to continue creating the new runtime..."
 # --- END PAUSE ---
 
 # 4. Create Agent Runtime YAML
@@ -425,27 +425,14 @@ while true; do
   sleep 5
 done
 
-# 10. Check for Output File in Pod
-log "Verifying output file creation in pod..."
-# Refresh pod name in case it changed (unlikely but possible)
-pod_name=$(kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null)
-if [[ -z "$pod_name" ]]; then
-    error "Could not find running pod for $AGENT_NAME to check output file."
-fi
+# --- ADDED: Fetch and display final run details (including result) ---
+log "Fetching final run details for $RUN_ID..."
+final_run_details=$(curl -s -X GET "http://localhost:$AGENT_PORT/runs/$RUN_ID" -H "Authorization: Bearer $AGENT_API_TOKEN")
 
-# Use stat to check file existence and size > 0
-if ! kubectl exec "$pod_name" -n "$NAMESPACE" -- stat -c %s /app/personalized_email.md > /tmp/file_size.txt || ! [[ $(cat /tmp/file_size.txt) -gt 0 ]]; then
-  rm -f /tmp/file_size.txt
-  error "Output file /app/personalized_email.md not found or is empty in pod $pod_name."
-fi
-rm -f /tmp/file_size.txt
-log "Output file /app/personalized_email.md found and is not empty in pod $pod_name."
-
-# 11. Display Output File Content
-log "Displaying content of /app/personalized_email.md from pod $pod_name:"
-echo "---BEGIN OUTPUT FILE--- >>"
-kubectl exec "$pod_name" -n "$NAMESPACE" -- cat /app/personalized_email.md || echo "<< ---ERROR GETTING FILE CONTENT--- >>"
-echo "<< ---END OUTPUT FILE--- >>"
+log "Final Run Details (including result):"
+echo "---BEGIN FINAL RUN DETAILS--- >>"
+echo "$final_run_details" | jq . # Use jq for pretty printing if available, otherwise raw JSON
+echo "<< ---END FINAL RUN DETAILS--- >>"
 
 log "Script completed successfully!"
 
