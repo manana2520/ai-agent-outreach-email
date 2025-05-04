@@ -7,6 +7,34 @@ set -u
 # Prevent errors in a pipeline from being masked.
 set -o pipefail
 
+# --- IMPORTANT: API KEY SECURITY ---
+# NEVER hardcode API keys or tokens in scripts.
+# This script will load API credentials from the .env file in the project root.
+# Ensure .env file exists with the following variables:
+#   OPENROUTER_API_KEY=your-openrouter-api-key-here
+#   AGENT_API_TOKEN=your-agent-api-token-here
+# -----------------------------
+
+# Load environment variables from .env file
+if [ -f .env ]; then
+  echo "Loading environment variables from .env file..."
+  export $(grep -v '^#' .env | xargs)
+else
+  echo "Error: .env file not found in project root. Please create it with required API keys."
+  exit 1
+fi
+
+# Verify that required environment variables are set
+if [ -z "$OPENROUTER_API_KEY" ]; then
+  echo "Error: OPENROUTER_API_KEY is not set in .env file"
+  exit 1
+fi
+
+if [ -z "$AGENT_API_TOKEN" ]; then
+  echo "Error: AGENT_API_TOKEN is not set in .env file"
+  exit 1
+fi
+
 # --- Configuration ---
 NAMESPACE="ai-platform"
 AGENT_NAME="sales-personalized-email-agent"
@@ -18,8 +46,6 @@ YAML_PATH="/tmp/sales-agent-runtime.yaml"
 GITHUB_URL="https://github.com/manana2520/ai-agent-outreach-email"
 GITHUB_BRANCH="main"
 AGENT_ENTRYPOINT="src/sales_personalized_email/main.py"
-# WARNING: Hardcoded token - consider using env variables or secrets in production
-AGENT_API_TOKEN="***REMOVED***"
 
 # Agent input data (adjust as needed)
 AGENT_INPUT_JSON=$(cat <<EOF
@@ -239,7 +265,7 @@ spec:
       branch: "$GITHUB_BRANCH"
   envVars:
     - name: OPENAI_API_KEY
-      value: "***REMOVED***"
+      value: "$OPENROUTER_API_KEY"
     - name: OPENAI_API_BASE
       value: "https://openrouter.ai/api/v1"
     - name: OPENROUTER_MODEL
@@ -336,14 +362,45 @@ else
   log "Port $AGENT_PORT appears to be free."
 fi
 
-# Start Agent Port Forward in Background
+# Start Agent Port Forward in Background with retry logic
 log "Starting port-forward for Agent Service ($AGENT_SERVICE) on port $AGENT_PORT..."
-kubectl port-forward "service/$AGENT_SERVICE" -n "$NAMESPACE" "$AGENT_PORT:80" &
-AGENT_FWD_PID=$!
-sleep 2 # Give it a second to start
-if ! ps -p $AGENT_FWD_PID > /dev/null; then
-   error "Failed to start port-forward for Agent Service."
+
+# Port-forward retry logic
+max_retries=3
+retry_count=0
+port_forward_success=false
+
+while [[ $retry_count -lt $max_retries && $port_forward_success == false ]]; do
+  kubectl port-forward "service/$AGENT_SERVICE" -n "$NAMESPACE" "$AGENT_PORT:80" &
+  AGENT_FWD_PID=$!
+  
+  # Wait for port-forward to establish
+  log "Waiting for port-forward to establish (attempt $((retry_count+1))/$max_retries)..."
+  sleep 5
+  
+  # Check if process is still running
+  if ps -p $AGENT_FWD_PID > /dev/null; then
+    # Test the connection
+    if curl -s --connect-timeout 10 http://localhost:$AGENT_PORT/health > /dev/null 2>&1; then
+      log "Port-forward connection successful."
+      port_forward_success=true
+    else
+      log "Port-forward process is running but connection test failed. Killing and retrying..."
+      kill $AGENT_FWD_PID 2>/dev/null || true
+      sleep 2
+      ((retry_count++))
+    fi
+  else
+    log "Port-forward process terminated unexpectedly. Retrying..."
+    ((retry_count++))
+    sleep 2
+  fi
+done
+
+if [[ $port_forward_success == false ]]; then
+  error "Failed to establish port-forward connection after $max_retries attempts."
 fi
+
 log "Agent service port-forward started in background (PID: $AGENT_FWD_PID)."
 
 # Allow some time for the service/proxy to be ready

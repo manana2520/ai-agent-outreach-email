@@ -6,14 +6,20 @@ import time
 import os 
 import random # Import random module
 import urllib.parse # Import urlencode
-# from dotenv import load_dotenv # Not strictly needed for this version unless storing AGENT_API_TOKEN
+from dotenv import load_dotenv # Enable loading .env file
 
 # --- Configuration & Environment --- 
+# Load environment variables from .env file
+load_dotenv()
 
 # Agent API Configuration 
 AGENT_API_BASE_URL = "http://localhost:8082" # Assumes port-forward is running
-# Use the same token as defined in deploy_and_run_agent.sh for the agent API
-AGENT_API_TOKEN = "***REMOVED***" 
+# Get API token from environment variable
+AGENT_API_TOKEN = os.environ.get("AGENT_API_TOKEN")
+if not AGENT_API_TOKEN:
+    st.error("AGENT_API_TOKEN environment variable is not set. Please set it in the .env file.")
+    st.stop()
+
 POLLING_INTERVAL_SECONDS = 4 # Slightly longer interval for fun messages
 REQUEST_TIMEOUT = 30 # Timeout for individual HTTP requests
 POLLING_TIMEOUT_SECONDS = 360 # Overall timeout for waiting for the run to complete
