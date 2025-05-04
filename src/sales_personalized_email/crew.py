@@ -65,7 +65,6 @@ class SalesPersonalizedEmailCrew:
             config=self.tasks_config["write_email_task"],
             agent=self.email_copywriter(),
             output_json=PersonalizedEmail,
-            output_file="personalized_email.md",
         )
 
     @crew
