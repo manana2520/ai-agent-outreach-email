@@ -81,7 +81,7 @@ with st.sidebar:
         "Choose where to run the agent:",
         ("Cloud runner", "Local runner"),
         index=0,
-        help="Cloud runner uses the deployed API, Local runner runs the agent in-process."
+        help="Cloud runner calls the remote agent API. Local runner calls the local agentic runtime via HTTP."
     )
     # Dynamically set API base URL
     if runner_mode == "Cloud runner":
@@ -89,57 +89,48 @@ with st.sidebar:
     else:
         AGENT_API_BASE_URL = LOCAL_AGENT_API_BASE_URL
 
-    # --- Status check caching and refresh logic ---
-    if 'runner_status' not in st.session_state:
-        st.session_state.runner_status = {}
-        # Cloud runner status
-        cloud_status = "🔴 Cloud agent not responding"
-        cloud_error = ""
-        if not CLOUD_AGENT_API_TOKEN:
-            cloud_error = "CLOUD_AGENT_API_TOKEN not set in environment."
-        else:
-            try:
-                runs_url = f"{CLOUD_AGENT_API_BASE_URL}/runs?limit=1"
-                headers = {"Authorization": f"Bearer {CLOUD_AGENT_API_TOKEN}"}
-                resp = requests.get(runs_url, headers=headers, timeout=3)
-                if resp.status_code == 200:
-                    _ = resp.json()
-                    cloud_status = "🟢 Cloud agent responding"
-                else:
-                    cloud_error = f"HTTP {resp.status_code}: {resp.text}"
-            except Exception as e:
-                cloud_error = str(e)
-        st.session_state.runner_status['cloud_status'] = cloud_status
-        st.session_state.runner_status['cloud_error'] = cloud_error
-        # Local runner status (HTTP, not import)
-        local_status = "🔴 Local agent not responding"
-        local_error = ""
-        if not AGENT_API_TOKEN:
-            local_error = "AGENT_API_TOKEN not set in environment."
-        else:
-            try:
-                runs_url = f"{LOCAL_AGENT_API_BASE_URL}/runs?limit=1"
-                headers = {"Authorization": f"Bearer {AGENT_API_TOKEN}"}
-                resp = requests.get(runs_url, headers=headers, timeout=3)
-                if resp.status_code == 200:
-                    _ = resp.json()
-                    local_status = "🟢 Local agent responding"
-                else:
-                    local_error = f"HTTP {resp.status_code}: {resp.text}"
-            except Exception as e:
-                local_error = str(e)
-        st.session_state.runner_status['local_status'] = local_status
-        st.session_state.runner_status['local_error'] = local_error
-
+    # --- Always check status for the selected runner mode on every rerun ---
+    # Cloud runner status
+    cloud_status = "🔴 Cloud agent not responding"
+    cloud_error = ""
+    if not CLOUD_AGENT_API_TOKEN:
+        cloud_error = "CLOUD_AGENT_API_TOKEN not set in environment."
+    else:
+        try:
+            runs_url = f"{CLOUD_AGENT_API_BASE_URL}/runs?limit=1"
+            headers = {"Authorization": f"Bearer {CLOUD_AGENT_API_TOKEN}"}
+            resp = requests.get(runs_url, headers=headers, timeout=3)
+            if resp.status_code == 200:
+                _ = resp.json()
+                cloud_status = "🟢 Cloud agent responding"
+            else:
+                cloud_error = f"HTTP {resp.status_code}: {resp.text}"
+        except Exception as e:
+            cloud_error = str(e)
+    # Local runner status
+    local_status = "🔴 Local agent not responding"
+    local_error = ""
+    if not AGENT_API_TOKEN:
+        local_error = "AGENT_API_TOKEN not set in environment."
+    else:
+        try:
+            runs_url = f"{LOCAL_AGENT_API_BASE_URL}/runs?limit=1"
+            headers = {"Authorization": f"Bearer {AGENT_API_TOKEN}"}
+            resp = requests.get(runs_url, headers=headers, timeout=3)
+            if resp.status_code == 200:
+                _ = resp.json()
+                local_status = "🟢 Local agent responding"
+            else:
+                local_error = f"HTTP {resp.status_code}: {resp.text}"
+        except Exception as e:
+            local_error = str(e)
     # Display status for selected runner mode
     if runner_mode == "Cloud runner":
-        st.write(st.session_state.runner_status.get('cloud_status', ''))
-        if st.session_state.runner_status.get('cloud_status', '').startswith("🔴") and st.session_state.runner_status.get('cloud_error', ''):
-            st.caption(f"Cloud error: {st.session_state.runner_status['cloud_error']}")
+        st.write(cloud_status)
+        # No error details shown
     else:
-        st.write(st.session_state.runner_status.get('local_status', ''))
-        if st.session_state.runner_status.get('local_status', '').startswith("🔴") and st.session_state.runner_status.get('local_error', ''):
-            st.caption(f"Local error: {st.session_state.runner_status['local_error']}")
+        st.write(local_status)
+        # No error details shown
 
 # Display area for results
 result_area = st.container()
