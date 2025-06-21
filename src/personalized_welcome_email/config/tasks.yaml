@@ -1,0 +1,98 @@
+research_prospect_task:
+  description: >
+    Conduct research on a new signup: {first_name} {last_name} ({business_email}).
+    Your goal is to find their LinkedIn profile, company, and title.
+    Crucially, investigate any connection between them (or their company) and "Keboola".
+    Summarize their career highlights or recent professional activity.
+  agent: relationship_researcher
+  expected_output: >
+    A JSON object with their professional info, career summary, a confidence score,
+    and a boolean `is_existing_customer` flag.
+    Example for an existing customer:
+    ```json
+    {
+      "name": "Petr Kominek",
+      "linkedin_url": "...",
+      "company": "P3 Logistic Parks",
+      "title": "Data Platform Implementation Lead",
+      "career_highlights": "Led the successful implementation of a data platform at P3, explicitly mentioning a partnership with Keboola.",
+      "is_existing_customer": true,
+      "confidence_score": 0.95
+    }
+    ```
+    Example for a new prospect:
+    ```json
+    {
+      "name": "Jane Doe",
+      "linkedin_url": "...",
+      "company": "Innovate Corp",
+      "title": "Head of Analytics",
+      "career_highlights": "Has grown the analytics team at Innovate Corp from 2 to 10 people. Recently wrote about the challenges of data scaling.",
+      "is_existing_customer": false,
+      "confidence_score": 0.9
+    }
+    ```
+
+personalize_content_task:
+  description: >
+    Analyze the research findings to create context-aware talking points.
+    - If `is_existing_customer` is true, create points that acknowledge and
+      celebrate their work with Keboola. The tone should be appreciative.
+    - If `is_existing_customer` is false and `confidence_score` > 0.7, create
+      points that connect their career journey to the value of our platform.
+      The tone should be introductory and helpful.
+    - Otherwise, indicate that a generic email is required.
+  agent: personalization_strategist
+  expected_output: >
+    A JSON object with a list of talking points and an `is_generic` flag.
+    Example for an existing customer:
+    ```json
+    {
+      "is_generic": false,
+      "talking_points": [
+        "I saw your recent post about the successful data platform project at P3 - a huge congratulations from all of us at Keboola! We're thrilled to see the impact.",
+        "It's inspiring to see you leading the charge to become a data-driven organization. As you continue on that journey, we'd love to help you explore even more of our platform's capabilities."
+      ]
+    }
+    ```
+    Example for a new prospect:
+    ```json
+    {
+      "is_generic": false,
+      "talking_points": [
+        "I read about your work growing the analytics team at Innovate Corp. Scaling data infrastructure for a growing team is a tough challenge.",
+        "Given your focus on data scaling, you might find our platform's ability to automate data workflows and integrate new sources in minutes particularly valuable."
+      ]
+    }
+    ```
+    Example for a generic email:
+    ```json
+    {
+      "is_generic": true,
+      "talking_points": []
+    }
+    ```
+
+write_email_task:
+  description: >
+    Write a welcome email to {first_name} following their recent signup.
+    Use the context from the previous task to craft an email with the appropriate tone.
+    - If the talking points are about an existing customer, the email should be a
+      warm, appreciative message that acknowledges their ongoing partnership. The
+      subject line should be familiar and celebratory (e.g., "Great to see you
+      here, Petr!") but AVOID phrases like "Welcome Back," as we don't know what
+      they are signing up for. The goal is to make them feel like a valued partner.
+    - If the talking points are for a new prospect, the email should be a
+      personalized introduction that feels insightful and helpful.
+    - Otherwise, write a standard, friendly welcome email.
+    The subject line must be engaging and relevant to the context.
+  agent: adaptive_copywriter
+  expected_output: >
+    A PersonalizedEmail object containing:
+    1. A compelling, personalized or generic subject line.
+    2. The body of the email, written in a conversational yet professional tone,
+       and formatted with simple HTML tags (e.g., `<p>`, `<br>`).
+    3. Follow-up notes for the sales person, suggesting potential talking points
+       for future interactions (can be empty for generic emails).
+    4. The subject line must be no more than 10 words.
+    

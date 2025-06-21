@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 
-from sales_personalized_email.crew import SalesPersonalizedEmailCrew
+from personalized_welcome_email.crew import PersonalizedWelcomeEmailCrew
 
 # This main file is intended to be a way for your to run your
 # crew locally, so refrain from adding necessary logic into this file.
@@ -14,14 +14,12 @@ def run():
     Run the crew.
     """
     inputs = {
-        "name": "Joe Eyles",
-        "title": "Vice Principal",
-        "company": "Park Lane International School",
-        "industry": "Education",
-        "linkedin_url": "https://www.linkedin.com/in/joe-eyles-93b66b265",
-        "our_product": "AI and DAta Platform for Education",
+        "first_name": "John",
+        "last_name": "Doe",
+        "business_email": "john.doe@example.com",
+        "phone_number": "",
     }
-    SalesPersonalizedEmailCrew().crew().kickoff(inputs=inputs)
+    return PersonalizedWelcomeEmailCrew().crew().kickoff(inputs=inputs)
 
 
 def train():
@@ -30,7 +28,7 @@ def train():
     """
     inputs = {"topic": "AI LLMs"}
     try:
-        SalesPersonalizedEmailCrew().crew().train(
+        PersonalizedWelcomeEmailCrew().crew().train(
             n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs
         )
 
@@ -43,7 +41,7 @@ def replay():
     Replay the crew execution from a specific task.
     """
     try:
-        SalesPersonalizedEmailCrew().crew().replay(task_id=sys.argv[1])
+        PersonalizedWelcomeEmailCrew().crew().replay(task_id=sys.argv[1])
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
@@ -55,7 +53,7 @@ def test():
     """
     inputs = {"topic": "AI LLMs"}
     try:
-        SalesPersonalizedEmailCrew().crew().test(
+        PersonalizedWelcomeEmailCrew().crew().test(
             n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs
         )
 

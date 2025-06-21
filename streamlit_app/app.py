@@ -60,19 +60,15 @@ st.sidebar.header("Prospect Details")
 st.sidebar.caption("Enter the prospect information below.")
 
 # Use default values from previous runs for convenience
-default_name = "John Doe"
-default_title = "CTO"
-default_company = "Acme Corp"
-default_industry = "Technology"
-default_linkedin = "https://linkedin.com/in/johndoe"
-default_product = "SuperCRM"
+default_first_name = "John"
+default_last_name = "Doe"
+default_business_email = "john.doe@example.com"
+default_phone_number = ""
 
-name = st.sidebar.text_input("Name", value=default_name)
-title = st.sidebar.text_input("Title", value=default_title)
-company = st.sidebar.text_input("Company", value=default_company)
-industry = st.sidebar.text_input("Industry", value=default_industry)
-linkedin_url = st.sidebar.text_input("LinkedIn URL", value=default_linkedin)
-our_product = st.sidebar.text_area("Our Product/Service Description", value=default_product, height=100)
+first_name = st.sidebar.text_input("First Name", value=default_first_name)
+last_name = st.sidebar.text_input("Last Name", value=default_last_name)
+business_email = st.sidebar.text_input("Business Email", value=default_business_email)
+phone_number = st.sidebar.text_input("Phone Number", value=default_phone_number)
 
 # --- Runner Mode and Agent Status (Semaphore) at Top of Sidebar ---
 with st.sidebar:
@@ -164,7 +160,7 @@ if generate_clicked:
     st.session_state.generated_body = None
     
     # Validate inputs 
-    if not all([name, title, company, industry, linkedin_url, our_product]):
+    if not all([first_name, last_name, business_email]):
         st.sidebar.error("Please fill in all prospect details.")
         # Reset flag if inputs are bad
         st.session_state.generate_button_clicked = False 
@@ -179,15 +175,13 @@ if generate_clicked:
             api_token = AGENT_API_TOKEN
         result_area.info(f"Sending request to agent API at {api_base_url}...")
         inputs = {
-            "name": name,
-            "title": title,
-            "company": company,
-            "industry": industry,
-            "linkedin_url": linkedin_url,
-            "our_product": our_product,
+            "first_name": first_name,
+            "last_name": last_name,
+            "business_email": business_email,
+            "phone_number": phone_number,
         }
         kickoff_payload = {
-            "crew": "sales_personalized_email", # Make sure this matches crew name if needed
+            "crew": "personalized_welcome_email", # Make sure this matches crew name if needed
             "inputs": inputs
         }
         headers = {

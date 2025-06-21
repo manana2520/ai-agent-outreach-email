@@ -1,7 +1,7 @@
 [project]
-name = "sales_personalized_email"
+name = "personalized_welcome_email"
 version = "0.1.0"
-description = "sales-personalized-email using crewAI"
+description = "personalized-welcome-email using crewAI"
 authors = [
     { name = "Your Name", email = "you@example.com" },
 ]
@@ -13,11 +13,11 @@ dependencies = [
 ]
 
 [project.scripts]
-sales_personalized_email = "sales_personalized_email.main:run"
-run_crew = "sales_personalized_email.main:run"
-train = "sales_personalized_email.main:train"
-replay = "sales_personalized_email.main:replay"
-test = "sales_personalized_email.main:test"
+personalized_welcome_email = "personalized_welcome_email.main:run"
+run_crew = "personalized_welcome_email.main:run"
+train = "personalized_welcome_email.main:train"
+replay = "personalized_welcome_email.main:replay"
+test = "personalized_welcome_email.main:test"
 
 [build-system]
 requires = [
