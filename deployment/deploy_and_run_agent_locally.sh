@@ -8,7 +8,7 @@ set -u
 set -o pipefail
 
 # --- Configuration ---
-NAMESPACE="ai-platform"
+NAMESPACE="ai-agent-platform"
 AGENT_NAME="sales-personalized-email-agent"
 PLATFORM_API_SERVICE="ai-agent-platform-management-api"
 AGENT_SERVICE="$AGENT_NAME" # Assuming service name matches agent name
@@ -37,8 +37,8 @@ EOF
 )
 
 # Timeouts (in seconds)
-POD_TIMEOUT=120
-RUN_TIMEOUT=300
+POD_TIMEOUT=900
+RUN_TIMEOUT=180
 
 # Variable to store the dynamically generated pod name
 AGENT_POD_NAME=""
@@ -262,50 +262,81 @@ if ! kubectl apply -f "$YAML_PATH"; then
 fi
 log "Agent runtime deployment initiated."
 
-# 6. Wait for Agent Pod to be Running
-log "Waiting for agent pod ($AGENT_NAME) to be running (Timeout: ${POD_TIMEOUT}s)..."
+# Give the operator a moment to create the deployment
+sleep 5
+
+# Enhanced deployment monitoring with crash detection
+log "Monitoring deployment for crashes and failures..."
 start_time=$(date +%s)
+last_restart_count=0
+
 while true; do
-  # Attempt to get the name of the latest pod for the agent
-  # Using sort-by creationTimestamp and taking the last one (.items[-1]) might be slightly more robust if old pods linger
-  # However, filtering by status.phase=Running or Pending is usually sufficient if cleanup works well.
-  # Sticking to the original logic for now, but capturing the name.
-  pod_name=$(kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null || \
-             kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[?(@.status.phase=="Pending")].metadata.name}' 2>/dev/null || \
-             kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true) # Fallback to first item if no running/pending
-
-  if [[ -n "$pod_name" ]]; then
-      # If multiple pods match (e.g., during rollout), pick the first one listed
-      # A more robust way might involve sorting by creation time, but this often works.
-      AGENT_POD_NAME=$(echo "$pod_name" | awk '{print $1}') # Ensure we only get one name if multiple are returned
-      pod_status=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")
-      log "Pod '$AGENT_POD_NAME' status: $pod_status"
-      if [[ "$pod_status" == "Running" ]]; then
-        log "Agent pod is running ($AGENT_POD_NAME)."
-        break
-      elif [[ "$pod_status" == "Failed" || "$pod_status" == "Error" || "$pod_status" == "CrashLoopBackOff" ]]; then
-        # Fetch logs immediately if pod fails to start
-        log "Agent pod $AGENT_POD_NAME entered failed state: $pod_status"
-        echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
-        kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
-        echo "---END POD LOGS ($AGENT_POD_NAME)---"
-        error "Agent pod failed to start."
-      fi
-  else
-      log "Agent pod not found yet..."
-  fi
-
   current_time=$(date +%s)
-  elapsed_time=$((current_time - start_time))
-  if [[ $elapsed_time -ge $POD_TIMEOUT ]]; then
-    error "Timeout waiting for agent pod to become Running."
+  elapsed=$((current_time - start_time))
+  
+  if [ $elapsed -gt $POD_TIMEOUT ]; then
+    error "Timeout reached ($POD_TIMEOUT seconds). Deployment may be stuck."
   fi
+  
+  # Get pod status and details
+  AGENT_POD_NAME=$(kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[-1].metadata.name}' 2>/dev/null || echo "")
+  if [ -z "$AGENT_POD_NAME" ]; then
+    log "Waiting for pod to be created..."
+    sleep 5
+    continue
+  fi
+  
+  status=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null || echo "NOT_FOUND")
+  restarts=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo "0")
+  
+  log "Pod: $AGENT_POD_NAME, Status: $status, Restarts: $restarts, Elapsed: ${elapsed}s"
+  
+  # Check for crashes
+  if [ "$status" = "CrashLoopBackOff" ] || [ "$status" = "Error" ] || [ "$status" = "Failed" ]; then
+    log "CRASH DETECTED: Pod status is $status"
+    echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
+    kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
+    echo "---END POD LOGS ($AGENT_POD_NAME)---"
+    error "Pod crashed with status: $status"
+  fi
+  
+  # Check for restart increase
+  if [ "$restarts" -gt "$last_restart_count" ]; then
+    log "RESTART DETECTED: Pod restarted (was $last_restart_count, now $restarts)"
+    last_restart_count=$restarts
+    
+    # Show recent logs after restart
+    log "Recent logs after restart:"
+    kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=20
+  fi
+  
+  # Check for git error specifically
+  git_error=$(kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" 2>/dev/null | grep -i "ModuleNotFoundError.*git\|No module named 'git'" | tail -1)
+  if [ -n "$git_error" ]; then
+    log "CRITICAL ERROR DETECTED: Missing git module in runtime"
+    echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
+    kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
+    echo "---END POD LOGS ($AGENT_POD_NAME)---"
+    error "Runtime missing git module: $git_error"
+  fi
+  
+  # Check for success
+  if [ "$status" = "Running" ] && [ "$restarts" -eq 0 ]; then
+    # Wait a bit more to ensure it's stable
+    sleep 10
+    
+    # Check if it's still running
+    final_status=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null || echo "UNKNOWN")
+    if [ "$final_status" = "Running" ]; then
+      log "Agent deployment is available and stable."
+      break
+    else
+      log "Pod status changed to $final_status after success check"
+    fi
+  fi
+  
   sleep 5
 done
-
-# Add a delay to allow the service to be created/registered AND the app inside the pod to start listening
-log "Agent pod is running. Waiting 30s for service and internal app to stabilize..."
-sleep 30
 
 # 7. Check for and Kill Existing Process on Agent Port, then Start Agent Port Forward
 log "Checking if agent port $AGENT_PORT is already in use..."
@@ -343,19 +374,96 @@ else
   log "Port $AGENT_PORT appears to be free."
 fi
 
-# Start Agent Port Forward in Background
-log "Starting port-forward for Agent Service ($AGENT_SERVICE) on port $AGENT_PORT..."
-kubectl port-forward "service/$AGENT_SERVICE" -n "$NAMESPACE" "$AGENT_PORT:80" &
-AGENT_FWD_PID=$!
-sleep 2 # Give it a second to start
-if ! ps -p $AGENT_FWD_PID > /dev/null; then
-   error "Failed to start port-forward for Agent Service."
+# Get the name of the running pod JUST BEFORE port-forwarding
+log "Fetching the name of the running agent pod..."
+AGENT_POD_NAME=$(kubectl get pods -n "$NAMESPACE" -l "app=$AGENT_NAME" -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}')
+if [ -z "$AGENT_POD_NAME" ]; then
+    error "Could not find a running pod for agent $AGENT_NAME."
 fi
-log "Agent service port-forward started in background (PID: $AGENT_FWD_PID)."
+# If multiple running pods are found, just take the first one.
+AGENT_POD_NAME=$(echo "$AGENT_POD_NAME" | awk '{print $1}')
+log "Found running pod: $AGENT_POD_NAME"
 
-# Allow some time for the service/proxy to be ready
-log "Waiting a few seconds for agent port-forward proxy to stabilize..."
-sleep 5
+# Start Agent Port Forward in Background with a retry loop for stability
+log "Attempting to establish a stable port-forward..."
+PORT_FORWARD_ATTEMPTS=0
+MAX_PORT_FORWARD_ATTEMPTS=10 # Try for 50 seconds
+while true; do
+    # Start the port-forward command in the background.
+    # Stderr is redirected to a file to check for immediate errors.
+    kubectl port-forward "pod/$AGENT_POD_NAME" -n "$NAMESPACE" "$AGENT_PORT:8000" &> /tmp/port-forward.log &
+    AGENT_FWD_PID=$!
+
+    # Give it a moment to either succeed or fail
+    sleep 5
+
+    # Check if the process is still running
+    if ps -p $AGENT_FWD_PID > /dev/null; then
+        log "Port-forward process is running (PID: $AGENT_FWD_PID). Connection appears stable."
+        break # Success
+    fi
+
+    log "WARN: Port-forward process died. Retrying... (Attempt $((++PORT_FORWARD_ATTEMPTS)) of $MAX_PORT_FORWARD_ATTEMPTS)"
+    
+    if [ $PORT_FORWARD_ATTEMPTS -ge $MAX_PORT_FORWARD_ATTEMPTS ]; then
+        log "ERROR: Failed to establish a stable port-forward after $MAX_PORT_FORWARD_ATTEMPTS attempts."
+        log "Last port-forward error log:"
+        cat /tmp/port-forward.log
+        error "Could not start a stable port-forward."
+    fi
+done
+
+# Enhanced health check with crash monitoring
+log "Waiting for agent application to become healthy on http://localhost:$AGENT_PORT/health..."
+start_time=$(date +%s)
+health_check_attempts=0
+max_health_attempts=60  # 5 minutes with 5-second intervals
+
+while true; do
+    current_time=$(date +%s)
+    elapsed_time=$((current_time - start_time))
+    
+    if [[ $elapsed_time -ge $POD_TIMEOUT ]]; then
+        log "ERROR: Timeout waiting for agent application to become healthy."
+        echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
+        kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
+        echo "---END POD LOGS ($AGENT_POD_NAME)---"
+        error "Timeout waiting for agent application."
+    fi
+    
+    # Check if pod is still running and hasn't crashed
+    pod_status=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null || echo "NOT_FOUND")
+    pod_restarts=$(kubectl get pod "$AGENT_POD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo "0")
+    
+    # Check for crashes during health check
+    if [ "$pod_status" = "CrashLoopBackOff" ] || [ "$pod_status" = "Error" ] || [ "$pod_status" = "Failed" ]; then
+        log "CRASH DETECTED during health check: Pod status is $pod_status"
+        echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
+        kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
+        echo "---END POD LOGS ($AGENT_POD_NAME)---"
+        error "Pod crashed during health check with status: $pod_status"
+    fi
+    
+    # Check for git error during health check
+    git_error=$(kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" 2>/dev/null | grep -i "ModuleNotFoundError.*git\|No module named 'git'" | tail -1)
+    if [ -n "$git_error" ]; then
+        log "CRITICAL ERROR DETECTED during health check: Missing git module"
+        echo "---BEGIN POD LOGS ($AGENT_POD_NAME)---"
+        kubectl logs "$AGENT_POD_NAME" -n "$NAMESPACE" --tail=100 | cat || echo "<< ---ERROR GETTING POD LOGS--- >>"
+        echo "---END POD LOGS ($AGENT_POD_NAME)---"
+        error "Runtime missing git module during health check: $git_error"
+    fi
+    
+    # Try health check
+    if curl -s -f -o /dev/null "http://localhost:$AGENT_PORT/health"; then
+        log "Agent application is healthy!"
+        break
+    fi
+    
+    health_check_attempts=$((health_check_attempts + 1))
+    log "Health check attempt $health_check_attempts failed (Pod: $pod_status, Restarts: $pod_restarts), retrying in 5 seconds..."
+    sleep 5
+done
 
 # 8. Kick Off Agent Run
 log "Kicking off agent run..."

@@ -8,7 +8,7 @@ set -u
 set -o pipefail
 
 # --- Configuration ---
-NAMESPACE="ai-platform"
+NAMESPACE="ai-agent-platform"
 AGENT_NAME="sales-personalized-email-agent"
 PLATFORM_API_SERVICE="ai-agent-platform-management-api"
 AGENT_SERVICE="$AGENT_NAME" # Assuming service name matches agent name
