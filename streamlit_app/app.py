@@ -244,23 +244,40 @@ if generate_clicked:
                         if current_status == 'completed':
                             final_result_data = status_data.get('result')
                             try:
+                                # Debug: Show what we received
+                                st.write("DEBUG - Received result:", final_result_data)
+
                                 if isinstance(final_result_data, dict) and 'content' in final_result_data:
                                     content_data = final_result_data['content']
+                                    st.write("DEBUG - Content data type:", type(content_data))
+
                                     if isinstance(content_data, str):
                                         parsed_email_data = json.loads(content_data)
                                     elif isinstance(content_data, dict):
                                         parsed_email_data = content_data
-                                    else: 
+                                    else:
                                         raise ValueError("Content is not a string or dictionary")
+
+                                    st.write("DEBUG - Parsed email data:", parsed_email_data)
+
                                     if parsed_email_data and isinstance(parsed_email_data, dict):
                                          st.session_state.generated_subject = parsed_email_data.get("subject_line")
                                          st.session_state.generated_body = parsed_email_data.get("email_body")
+                                         st.write("DEBUG - Stored in session:", {
+                                             "subject": st.session_state.generated_subject,
+                                             "body_preview": st.session_state.generated_body[:100] if st.session_state.generated_body else None
+                                         })
                                     else:
                                          error_message = "Completed, but failed to parse email data structure from result content."
                                          current_status = "parsing_error"
+                                else:
+                                    error_message = "No 'content' field in result data."
+                                    current_status = "parsing_error"
                             except Exception as e:
                                 error_message = f"Error parsing result: {e}"
                                 current_status = "parsing_error"
+                                st.error(f"DEBUG - Parse error: {e}")
+                                st.write("DEBUG - Raw result:", status_data)
                             status_container.markdown(f"**{status_label}**  \n:heavy_check_mark: Completed!")
                             break
                         elif current_status == 'error':
@@ -292,16 +309,24 @@ else:
      # Show initial message only if no result and generate wasn't clicked
      result_area.info("Fill in the prospect details in the sidebar and click 'Generate Personalized Email' to start.")
 
+# Debug: Show session state
+st.write("DEBUG - Session state check:", {
+    "has_subject": bool(st.session_state.get('generated_subject')),
+    "has_body": bool(st.session_state.get('generated_body')),
+    "subject": st.session_state.get('generated_subject'),
+    "body_preview": st.session_state.get('generated_body', '')[:100] if st.session_state.get('generated_body') else None
+})
+
 if st.session_state.generated_subject and st.session_state.generated_body:
-    st.success("Email Generated Successfully!") 
+    st.success("Email Generated Successfully!")
     st.subheader("Subject:")
     st.write(st.session_state.generated_subject)
-    
+
     st.subheader("Body:")
     email_body_display = st.session_state.generated_body.replace('\\n', '\n')
-    st.text_area("Generated Email Body", email_body_display, height=400, key="email_body_display_persistent") 
-    
-    # --- Add Gmail Compose Link --- 
+    st.text_area("Generated Email Body", email_body_display, height=400, key="email_body_display_persistent")
+
+    # --- Add Gmail Compose Link ---
     st.divider()
     try:
         subject_encoded = urllib.parse.quote_plus(st.session_state.generated_subject)
@@ -315,6 +340,11 @@ if st.session_state.generated_subject and st.session_state.generated_body:
         st.caption("(Opens Gmail compose window with subject and body. Requires login.)")
     except Exception as link_e:
         st.error(f"Could not generate 'Compose in Gmail' link: {link_e}")
+else:
+    st.write("DEBUG - Results not showing because:", {
+        "generated_subject": st.session_state.get('generated_subject'),
+        "generated_body": st.session_state.get('generated_body')
+    })
 
 # Reset generate button flag after the script run completes
 st.session_state.generate_button_clicked = False 
