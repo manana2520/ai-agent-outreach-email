@@ -244,29 +244,41 @@ if generate_clicked:
                         if current_status == 'completed':
                             final_result_data = status_data.get('result')
                             try:
-                                # Debug: Show what we received
-                                st.write("DEBUG - Received result:", final_result_data)
-
                                 if isinstance(final_result_data, dict) and 'content' in final_result_data:
                                     content_data = final_result_data['content']
-                                    st.write("DEBUG - Content data type:", type(content_data))
 
                                     if isinstance(content_data, str):
-                                        parsed_email_data = json.loads(content_data)
+                                        # Try to fix JSON formatting issues before parsing
+                                        try:
+                                            parsed_email_data = json.loads(content_data)
+                                        except json.JSONDecodeError as e:
+                                            # The content might have unescaped newlines, try to fix
+                                            import re
+                                            # Fix common JSON issues
+                                            fixed_content = content_data.replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+                                            try:
+                                                parsed_email_data = json.loads(fixed_content)
+                                            except json.JSONDecodeError as e2:
+                                                # Try to extract the fields manually using regex
+                                                subject_match = re.search(r'"subject_line":\s*"([^"]*)"', content_data)
+                                                body_match = re.search(r'"email_body":\s*"(.*?)",\s*"follow_up_notes"', content_data, re.DOTALL)
+
+                                                if subject_match and body_match:
+                                                    parsed_email_data = {
+                                                        "subject_line": subject_match.group(1),
+                                                        "email_body": body_match.group(1).replace('\\n', '\n'),
+                                                        "follow_up_notes": "Manual extraction - follow-up notes available in raw data"
+                                                    }
+                                                else:
+                                                    raise ValueError(f"Could not parse or extract email data: {e2}")
                                     elif isinstance(content_data, dict):
                                         parsed_email_data = content_data
                                     else:
                                         raise ValueError("Content is not a string or dictionary")
 
-                                    st.write("DEBUG - Parsed email data:", parsed_email_data)
-
                                     if parsed_email_data and isinstance(parsed_email_data, dict):
                                          st.session_state.generated_subject = parsed_email_data.get("subject_line")
                                          st.session_state.generated_body = parsed_email_data.get("email_body")
-                                         st.write("DEBUG - Stored in session:", {
-                                             "subject": st.session_state.generated_subject,
-                                             "body_preview": st.session_state.generated_body[:100] if st.session_state.generated_body else None
-                                         })
                                     else:
                                          error_message = "Completed, but failed to parse email data structure from result content."
                                          current_status = "parsing_error"
@@ -276,8 +288,6 @@ if generate_clicked:
                             except Exception as e:
                                 error_message = f"Error parsing result: {e}"
                                 current_status = "parsing_error"
-                                st.error(f"DEBUG - Parse error: {e}")
-                                st.write("DEBUG - Raw result:", status_data)
                             status_container.markdown(f"**{status_label}**  \n:heavy_check_mark: Completed!")
                             break
                         elif current_status == 'error':
@@ -309,13 +319,7 @@ else:
      # Show initial message only if no result and generate wasn't clicked
      result_area.info("Fill in the prospect details in the sidebar and click 'Generate Personalized Email' to start.")
 
-# Debug: Show session state
-st.write("DEBUG - Session state check:", {
-    "has_subject": bool(st.session_state.get('generated_subject')),
-    "has_body": bool(st.session_state.get('generated_body')),
-    "subject": st.session_state.get('generated_subject'),
-    "body_preview": st.session_state.get('generated_body', '')[:100] if st.session_state.get('generated_body') else None
-})
+# Check session state for results
 
 if st.session_state.generated_subject and st.session_state.generated_body:
     st.success("Email Generated Successfully!")
@@ -341,10 +345,8 @@ if st.session_state.generated_subject and st.session_state.generated_body:
     except Exception as link_e:
         st.error(f"Could not generate 'Compose in Gmail' link: {link_e}")
 else:
-    st.write("DEBUG - Results not showing because:", {
-        "generated_subject": st.session_state.get('generated_subject'),
-        "generated_body": st.session_state.get('generated_body')
-    })
+    # Results not available yet or parsing failed
+    pass
 
 # Reset generate button flag after the script run completes
 st.session_state.generate_button_clicked = False 
