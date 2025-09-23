@@ -44,20 +44,29 @@ This is a CrewAI-based sales personalized email generator that uses multiple AI 
 - Tasks defined in `src/sales_personalized_email/config/tasks.yaml`
 - Sequential processing workflow with delegation disabled for focused execution
 
-### Input Structure
+### Input Structure (Updated)
 The crew expects these input parameters:
-- `name`: Prospect's name
-- `title`: Job title
-- `company`: Company name
-- `industry`: Industry sector
-- `linkedin_url`: LinkedIn profile URL
-- `our_product`: Product/service description
+- `first_name`: First name (required)
+- `last_name`: Last name (required)
+- `title`: Job title (optional)
+- `company`: Company/Account name (required)
+- `phone`: Phone number (optional)
+- `country`: Country location (optional)
+- `linkedin_profile`: LinkedIn profile URL (optional - will be researched/validated)
+- `selling_intent`: Specific selling intent/use case (optional - defaults to Keboola use cases)
+
+### Agent Workflow
+1. **LinkedIn Research Agent**: Validates provided LinkedIn profiles or searches for correct ones
+2. **Prospect Research Agent**: Gathers comprehensive information about the prospect and company
+3. **Content Personalization Agent**: Identifies connection points with Keboola's solutions
+4. **Email Copywriter Agent**: Crafts personalized emails with Keboola value propositions
 
 ### Output Structure
 Returns a PersonalizedEmail object with:
 - `subject_line`: Compelling, personalized subject (max 10 words)
-- `email_body`: Conversational yet professional email body
+- `email_body`: Conversational yet professional email body focused on Keboola solutions
 - `follow_up_notes`: Suggested talking points for future interactions
+- `linkedin_profile_validated`: Validated or researched LinkedIn profile URL
 
 ## Deployment Architecture
 

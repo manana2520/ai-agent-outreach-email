@@ -55,24 +55,33 @@ st.title(" Personalized Sales Email Generator (Remote Agent Trigger)")
 st.caption("UI for interacting with the deployed CrewAI agent via its API.")
 st.warning(" Ensure the agent is deployed and the port-forward command is active in another terminal: `kubectl port-forward service/sales-personalized-email-agent -n ai-platform 8082:80`", icon="⚠️")
 
-# --- Input Form --- 
+# --- Input Form ---
 st.sidebar.header("Prospect Details")
-st.sidebar.caption("Enter the prospect information below.")
+st.sidebar.caption("Enter the prospect information below. * indicates required fields.")
 
-# Use default values from previous runs for convenience
-default_name = "John Doe"
-default_title = "CTO"
-default_company = "Acme Corp"
-default_industry = "Technology"
-default_linkedin = "https://linkedin.com/in/johndoe"
-default_product = "SuperCRM"
+# Use default values for testing
+default_first_name = "Joe"
+default_last_name = "Eyles"
+default_title = "Vice Principal"
+default_company = "Park Lane International School"
+default_phone = ""
+default_country = "UK"
+default_linkedin = "https://www.linkedin.com/in/joe-eyles-93b66b265"
+default_selling_intent = ""
 
-name = st.sidebar.text_input("Name", value=default_name)
-title = st.sidebar.text_input("Title", value=default_title)
-company = st.sidebar.text_input("Company", value=default_company)
-industry = st.sidebar.text_input("Industry", value=default_industry)
-linkedin_url = st.sidebar.text_input("LinkedIn URL", value=default_linkedin)
-our_product = st.sidebar.text_area("Our Product/Service Description", value=default_product, height=100)
+first_name = st.sidebar.text_input("First Name *", value=default_first_name)
+last_name = st.sidebar.text_input("Last Name *", value=default_last_name)
+title = st.sidebar.text_input("Title (optional)", value=default_title)
+company = st.sidebar.text_input("Company / Account *", value=default_company)
+phone = st.sidebar.text_input("Phone (optional)", value=default_phone)
+country = st.sidebar.text_input("Country (optional)", value=default_country)
+linkedin_profile = st.sidebar.text_input("LinkedIn Profile (optional)", value=default_linkedin)
+selling_intent = st.sidebar.text_area(
+    "Selling Intent / Use Case (optional)",
+    value=default_selling_intent,
+    height=100,
+    help="Specific use case or selling intent. If left empty, agent will create Keboola-specific use cases based on prospect's industry and role."
+)
 
 # --- Runner Mode and Agent Status (Semaphore) at Top of Sidebar ---
 with st.sidebar:
@@ -163,13 +172,13 @@ if generate_clicked:
     st.session_state.generated_subject = None
     st.session_state.generated_body = None
     
-    # Validate inputs 
-    if not all([name, title, company, industry, linkedin_url, our_product]):
-        st.sidebar.error("Please fill in all prospect details.")
+    # Validate inputs (only required fields)
+    if not all([first_name, last_name, company]):
+        st.sidebar.error("Please fill in all required fields: First Name, Last Name, and Company.")
         # Reset flag if inputs are bad
-        st.session_state.generate_button_clicked = False 
+        st.session_state.generate_button_clicked = False
     else:
-        result_area.empty() 
+        result_area.empty()
         # --- Unified agent call logic for both runners ---
         if runner_mode == "Cloud runner":
             api_base_url = CLOUD_AGENT_API_BASE_URL
@@ -178,13 +187,17 @@ if generate_clicked:
             api_base_url = LOCAL_AGENT_API_BASE_URL
             api_token = AGENT_API_TOKEN
         result_area.info(f"Sending request to agent API at {api_base_url}...")
+
+        # Prepare inputs with new schema
         inputs = {
-            "name": name,
-            "title": title,
+            "first_name": first_name,
+            "last_name": last_name,
+            "title": title if title else None,
             "company": company,
-            "industry": industry,
-            "linkedin_url": linkedin_url,
-            "our_product": our_product,
+            "phone": phone if phone else None,
+            "country": country if country else None,
+            "linkedin_profile": linkedin_profile if linkedin_profile else None,
+            "selling_intent": selling_intent if selling_intent else None,
         }
         kickoff_payload = {
             "crew": "sales_personalized_email", # Make sure this matches crew name if needed

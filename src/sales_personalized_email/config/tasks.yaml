@@ -1,41 +1,86 @@
+linkedin_research_task:
+  description: >
+    Your task is to find and validate the LinkedIn profile for {first_name} {last_name} at {company}.
+    If linkedin_profile is provided in the input, validate it by:
+    1. Checking if the URL is accessible and active
+    2. Verifying it matches the prospect's name and company
+    3. If the provided profile doesn't match or is invalid, search for the correct one
+
+    If no linkedin_profile is provided, search for the correct LinkedIn profile using:
+    1. Full name: "{first_name} {last_name}"
+    2. Company: {company}
+    3. Title: {title} (if provided)
+    4. Country: {country} (if provided)
+
+    Use search queries like: "{first_name} {last_name} {company} LinkedIn" or
+    "{title} {first_name} {last_name} {company}" to find the most relevant profile.
+  expected_output: >
+    A validated LinkedIn profile URL that matches the prospect's information,
+    along with basic verification details confirming this is the correct person.
+    If no LinkedIn profile can be found or validated, clearly state this fact.
+
 research_prospect_task:
   description: >
-    Conduct thorough research on {name}, their role as
+    Conduct thorough research on {first_name} {last_name}, their role as
     {title} at {company}, and the company itself.
-    Look for recent news, achievements, challenges, or interests related to
-    {name} or their company in the {industry} industry.
-    Use their LinkedIn profile ({linkedin_url}) and other publicly
-    available sources to gather relevant information.
-    Important: When using search or website scraping tools, provide only the search query string or the website URL respectively as the input, not a JSON object.
+    Use the validated LinkedIn profile from the previous task and other publicly
+    available sources to gather comprehensive information.
+
+    Research areas to focus on:
+    1. Professional background and career progression
+    2. Company information, industry, and recent news
+    3. Professional interests, achievements, and challenges
+    4. Industry trends and pain points relevant to their role
+    5. Company's data/technology initiatives (if any)
+
+    Important: When using tools, provide input as single dictionaries only:
+    - Search: {"search_query": "your query"}
+    - Website: {"website_url": "https://url"}
+    Make ONE tool call at a time.
   expected_output: >
-    A detailed dossier on {name} and {company},
+    A comprehensive dossier on {first_name} {last_name} and {company},
     including recent professional activities, potential pain points, interests,
-    and any other information that could be used to personalize communication.
+    industry challenges, and any other information that could be used to
+    personalize communication about Keboola's data platform.
 
 personalize_content_task:
   description: >
-    Using the research on {name} and {company},
-    identify specific ways that {our_product} can address their potential needs
-    or align with their professional interests. Look for unique angles or shared
-    points of interest that can be used to create a strong personal connection
-    in the email.
+    Using the research on {first_name} {last_name} and {company},
+    identify specific ways that Keboola's unified data & AI orchestration platform
+    can address their potential needs or align with their professional interests.
+
+    Consider:
+    1. If selling_intent is provided: "{selling_intent}", use this as primary guidance
+    2. If no selling_intent: Create relevant Keboola use cases based on their industry, role, and company needs
+    3. Keboola's key benefits: 4x productivity boost, 73% faster project delivery, 80% less maintenance
+    4. 700+ connectors, AI-powered automation, enterprise governance
+    5. Industry-specific pain points that Keboola can solve
+
+    Look for unique angles or shared points of interest that can create
+    a strong personal connection in the email.
   expected_output: >
     A list of personalized talking points and angles to use in the email,
-    connecting {name}'s background, interests, or challenges
-    with the benefits of {our_product}.
+    connecting {first_name} {last_name}'s background, interests, or challenges
+    with specific benefits of Keboola's data platform. Include specific features,
+    use cases, and value propositions most relevant to their situation.
 
 write_email_task:
   description: >
-    Craft a highly personalized email to {name} about {our_product}.
-    Use the research and personalized content to create an email that feels
-    individual, relevant, and engaging. The email should demonstrate understanding
-    of their role and challenges, showcase how {our_product} can provide value,
-    and invite further conversation.
+    Craft a highly personalized email to {first_name} {last_name} about Keboola's
+    data and AI orchestration platform. Use the research and personalized content
+    to create an email that feels individual, relevant, and engaging.
+
+    The email should:
+    1. Demonstrate understanding of their role and challenges
+    2. Showcase how Keboola can provide specific value to their situation
+    3. Reference the validated LinkedIn profile if found
+    4. Include relevant industry insights
+    5. Have a clear call-to-action for further conversation
+    6. Maintain a professional yet personable tone
   expected_output: >
     A PersonalizedEmail object containing:
-    1. A compelling, personalized subject line
+    1. A compelling, personalized subject line (max 10 words, trigger curiosity)
     2. The body of the email, written in a conversational yet professional tone
-    3. Follow-up notes for the sales person, suggesting potential talking points
-       for future interactions
-    4. Subject line must be personalized to the recipient, must trigger curiosity and not be more then 10 words
+    3. Follow-up notes for the sales person with specific talking points for future interactions
+    4. The validated LinkedIn profile URL (if found and verified)
     

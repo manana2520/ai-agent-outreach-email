@@ -14,12 +14,14 @@ def run():
     Run the crew.
     """
     inputs = {
-        "name": "Joe Eyles",
+        "first_name": "Joe",
+        "last_name": "Eyles",
         "title": "Vice Principal",
         "company": "Park Lane International School",
-        "industry": "Education",
-        "linkedin_url": "https://www.linkedin.com/in/joe-eyles-93b66b265",
-        "our_product": "AI and DAta Platform for Education",
+        "phone": None,
+        "country": "UK",
+        "linkedin_profile": "https://www.linkedin.com/in/joe-eyles-93b66b265",
+        "selling_intent": "AI and Data Platform for Education to improve student outcomes and administrative efficiency",
     }
     SalesPersonalizedEmailCrew().crew().kickoff(inputs=inputs)
 

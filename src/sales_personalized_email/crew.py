@@ -1,14 +1,27 @@
 from crewai_tools import ScrapeWebsiteTool, SerperDevTool
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
+
+
+class ProspectData(BaseModel):
+    first_name: str = Field(..., description="First name of the prospect")
+    last_name: str = Field(..., description="Last name of the prospect")
+    title: Optional[str] = Field(None, description="Job title of the prospect")
+    company: str = Field(..., description="Company/Account name (mandatory)")
+    phone: Optional[str] = Field(None, description="Phone number")
+    country: Optional[str] = Field(None, description="Country location")
+    linkedin_profile: Optional[str] = Field(None, description="LinkedIn profile URL")
+    selling_intent: Optional[str] = Field(None, description="Specific selling intent/use case for the product")
 
 
 class PersonalizedEmail(BaseModel):
     subject_line: str
     email_body: str
     follow_up_notes: str
+    linkedin_profile_validated: Optional[str] = Field(None, description="Validated or researched LinkedIn profile URL")
 
 
 @CrewBase
@@ -17,6 +30,15 @@ class SalesPersonalizedEmailCrew:
 
     agents_config = "config/agents.yaml"
     tasks_config = "config/tasks.yaml"
+
+    @agent
+    def linkedin_researcher(self) -> Agent:
+        return Agent(
+            config=self.agents_config["linkedin_researcher"],
+            tools=[SerperDevTool(), ScrapeWebsiteTool()],
+            allow_delegation=False,
+            verbose=True,
+        )
 
     @agent
     def prospect_researcher(self) -> Agent:
@@ -43,6 +65,13 @@ class SalesPersonalizedEmailCrew:
             tools=[],
             allow_delegation=False,
             verbose=True,
+        )
+
+    @task
+    def linkedin_research_task(self) -> Task:
+        return Task(
+            config=self.tasks_config["linkedin_research_task"],
+            agent=self.linkedin_researcher(),
         )
 
     @task
