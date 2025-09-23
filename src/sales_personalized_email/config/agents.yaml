@@ -12,8 +12,10 @@ linkedin_researcher:
 
     CONFIDENCE ASSESSMENT RULES:
     - HIGH confidence: Exact name/company match, verified profile, clear job title
+    - MEDIUM confidence: Good match with minor uncertainties (acceptable for LinkedIn profiles)
     - LOW confidence: Partial matches, common names, unclear information
-    - ONLY return validated fields when confidence is HIGH
+    - Return LinkedIn profiles when confidence is HIGH or MEDIUM (be less restrictive)
+    - Return title/country only when confidence is HIGH
 
     VALIDATION LOGIC:
     1. If linkedin_profile is provided: Always validate it (check if it matches prospect info)

@@ -16,17 +16,26 @@ linkedin_research_task:
     4. If linkedin_profile is missing: Search for correct profile
 
     CONFIDENCE ASSESSMENT:
-    - HIGH: Exact name/company match, verified sources, clear information
+    - HIGH: Exact name/company match, verified sources, clear information, profile shows correct person
+    - MEDIUM: Good match but some uncertainty (still acceptable for LinkedIn profiles)
     - LOW: Partial matches, common names, ambiguous results
-    - Only return discovered fields when confidence is HIGH
+    - Return discovered fields when confidence is HIGH or MEDIUM (be more permissive for LinkedIn profiles)
 
     Use targeted search queries and validate information from multiple sources.
   expected_output: >
-    A report containing:
-    1. Validated LinkedIn profile URL (if found/validated)
-    2. Confidence assessment for each piece of information
-    3. Only include title and country if confidence is HIGH
-    4. Clear statement of what was validated vs. what was discovered
+    A detailed report containing:
+    1. VALIDATED LINKEDIN PROFILE: [URL] (return if found and confidence is HIGH/MEDIUM)
+    2. DISCOVERED TITLE: [title] (only if confidence is HIGH)
+    3. DISCOVERED COUNTRY: [country] (only if confidence is HIGH)
+    4. CONFIDENCE LEVELS: State confidence (HIGH/MEDIUM/LOW) for each field
+    5. SEARCH PROCESS: Brief summary of search queries used and results found
+
+    FORMAT EXAMPLE:
+    - LinkedIn Profile: https://linkedin.com/in/person-name (CONFIDENCE: HIGH - exact match)
+    - Title: Chief Technology Officer (CONFIDENCE: HIGH - clearly stated on profile)
+    - Country: United States (CONFIDENCE: HIGH - confirmed from profile location)
+
+    Be thorough in your search and don't be overly cautious - return LinkedIn profiles if they clearly match the person.
 
 research_prospect_task:
   description: >
@@ -88,7 +97,12 @@ write_email_task:
     6. Maintain a professional yet personable tone
 
     IMPORTANT: Extract validated prospect information from previous research tasks and include
-    in the final output. Only include fields where confidence was assessed as HIGH.
+    in the final output. Look for validated information in the LinkedIn research report and include:
+    - validated_linkedin_profile: Include if found (HIGH or MEDIUM confidence)
+    - validated_title: Include if found with HIGH confidence
+    - validated_country: Include if found with HIGH confidence
+
+    Parse the LinkedIn research report carefully and extract any discovered information with sufficient confidence.
   expected_output: >
     A PersonalizedEmail object containing:
     1. A compelling, personalized subject line (max 10 words, trigger curiosity)
