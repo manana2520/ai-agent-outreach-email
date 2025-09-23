@@ -152,6 +152,14 @@ if 'generated_body' not in st.session_state:
 if 'generate_button_clicked' not in st.session_state:
     st.session_state.generate_button_clicked = False # Track if generate was clicked this run
 
+# Initialize validated fields session state
+if 'validated_title' not in st.session_state:
+    st.session_state.validated_title = None
+if 'validated_linkedin_profile' not in st.session_state:
+    st.session_state.validated_linkedin_profile = None
+if 'validated_country' not in st.session_state:
+    st.session_state.validated_country = None
+
 # --- Define Buttons Once --- 
 # Define buttons here so their state is available throughout the script run
 generate_clicked = st.sidebar.button("Generate Personalized Email", type="primary", key="generate_button")
@@ -162,6 +170,10 @@ if clear_clicked:
      st.session_state.generated_subject = None
      st.session_state.generated_body = None
      st.session_state.generate_button_clicked = False # Reset generate flag too
+     # Clear validated fields
+     st.session_state.validated_title = None
+     st.session_state.validated_linkedin_profile = None
+     st.session_state.validated_country = None
      result_area.info("Results cleared. Fill in details and click generate.")
      # No rerun needed here, the rest of the script will handle the cleared state
 
@@ -267,7 +279,10 @@ if generate_clicked:
                                                     parsed_email_data = {
                                                         "subject_line": subject_match.group(1),
                                                         "email_body": body_match.group(1).replace('\\n', '\n'),
-                                                        "follow_up_notes": "Manual extraction - follow-up notes available in raw data"
+                                                        "follow_up_notes": "Manual extraction - follow-up notes available in raw data",
+                                                        "validated_title": None,
+                                                        "validated_linkedin_profile": None,
+                                                        "validated_country": None
                                                     }
                                                 else:
                                                     raise ValueError(f"Could not parse or extract email data: {e2}")
@@ -279,6 +294,10 @@ if generate_clicked:
                                     if parsed_email_data and isinstance(parsed_email_data, dict):
                                          st.session_state.generated_subject = parsed_email_data.get("subject_line")
                                          st.session_state.generated_body = parsed_email_data.get("email_body")
+                                         # Store validated fields
+                                         st.session_state.validated_title = parsed_email_data.get("validated_title")
+                                         st.session_state.validated_linkedin_profile = parsed_email_data.get("validated_linkedin_profile")
+                                         st.session_state.validated_country = parsed_email_data.get("validated_country")
                                     else:
                                          error_message = "Completed, but failed to parse email data structure from result content."
                                          current_status = "parsing_error"
@@ -329,6 +348,21 @@ if st.session_state.generated_subject and st.session_state.generated_body:
     st.subheader("Body:")
     email_body_display = st.session_state.generated_body.replace('\\n', '\n')
     st.text_area("Generated Email Body", email_body_display, height=400, key="email_body_display_persistent")
+
+    # --- Display Validated Fields ---
+    validated_fields = []
+    if st.session_state.get('validated_title'):
+        validated_fields.append(f"**Title**: {st.session_state.validated_title}")
+    if st.session_state.get('validated_linkedin_profile'):
+        validated_fields.append(f"**LinkedIn**: [Profile Link]({st.session_state.validated_linkedin_profile})")
+    if st.session_state.get('validated_country'):
+        validated_fields.append(f"**Country**: {st.session_state.validated_country}")
+
+    if validated_fields:
+        st.subheader("Validated Prospect Information:")
+        st.caption("Fields discovered/validated with high confidence during research")
+        for field in validated_fields:
+            st.markdown(f"• {field}")
 
     # --- Add Gmail Compose Link ---
     st.divider()

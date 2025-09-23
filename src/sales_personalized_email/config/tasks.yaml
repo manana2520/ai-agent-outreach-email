@@ -1,23 +1,32 @@
 linkedin_research_task:
   description: >
-    Your task is to find and validate the LinkedIn profile for {first_name} {last_name} at {company}.
-    If linkedin_profile is provided in the input, validate it by:
-    1. Checking if the URL is accessible and active
-    2. Verifying it matches the prospect's name and company
-    3. If the provided profile doesn't match or is invalid, search for the correct one
+    Your task is to research and validate prospect information with confidence assessment.
 
-    If no linkedin_profile is provided, search for the correct LinkedIn profile using:
-    1. Full name: "{first_name} {last_name}"
-    2. Company: {company}
-    3. Title: {title} (if provided)
-    4. Country: {country} (if provided)
+    PROVIDED INFORMATION:
+    - Name: {first_name} {last_name}
+    - Company: {company}
+    - Title: {title} (use if provided)
+    - LinkedIn Profile: {linkedin_profile} (validate if provided)
+    - Country: {country} (use if provided)
 
-    Use search queries like: "{first_name} {last_name} {company} LinkedIn" or
-    "{title} {first_name} {last_name} {company}" to find the most relevant profile.
+    VALIDATION REQUIREMENTS:
+    1. If linkedin_profile is provided: Always validate it (check if accessible and matches prospect)
+    2. If title is missing: Research and find it (only return if HIGH confidence)
+    3. If country is missing: Research and find it (only return if HIGH confidence)
+    4. If linkedin_profile is missing: Search for correct profile
+
+    CONFIDENCE ASSESSMENT:
+    - HIGH: Exact name/company match, verified sources, clear information
+    - LOW: Partial matches, common names, ambiguous results
+    - Only return discovered fields when confidence is HIGH
+
+    Use targeted search queries and validate information from multiple sources.
   expected_output: >
-    A validated LinkedIn profile URL that matches the prospect's information,
-    along with basic verification details confirming this is the correct person.
-    If no LinkedIn profile can be found or validated, clearly state this fact.
+    A report containing:
+    1. Validated LinkedIn profile URL (if found/validated)
+    2. Confidence assessment for each piece of information
+    3. Only include title and country if confidence is HIGH
+    4. Clear statement of what was validated vs. what was discovered
 
 research_prospect_task:
   description: >
@@ -73,14 +82,19 @@ write_email_task:
     The email should:
     1. Demonstrate understanding of their role and challenges
     2. Showcase how Keboola can provide specific value to their situation
-    3. Reference the validated LinkedIn profile if found
+    3. Reference validated prospect information from research
     4. Include relevant industry insights
     5. Have a clear call-to-action for further conversation
     6. Maintain a professional yet personable tone
+
+    IMPORTANT: Extract validated prospect information from previous research tasks and include
+    in the final output. Only include fields where confidence was assessed as HIGH.
   expected_output: >
     A PersonalizedEmail object containing:
     1. A compelling, personalized subject line (max 10 words, trigger curiosity)
     2. The body of the email, written in a conversational yet professional tone
     3. Follow-up notes for the sales person with specific talking points for future interactions
-    4. The validated LinkedIn profile URL (if found and verified)
+    4. validated_title: Job title (only if HIGH confidence from research)
+    5. validated_linkedin_profile: LinkedIn profile URL (if found/validated)
+    6. validated_country: Country location (only if HIGH confidence from research)
     
