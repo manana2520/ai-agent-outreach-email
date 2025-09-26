@@ -55,7 +55,7 @@ class SalesPersonalizedEmailCrew:
     def content_personalizer(self) -> Agent:
         return Agent(
             config=self.agents_config["content_personalizer"],
-            tools=[],
+            tools=[SerperDevTool(), ScrapeWebsiteTool()],
             allow_delegation=False,
             verbose=True,
         )

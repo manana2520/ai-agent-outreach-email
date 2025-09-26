@@ -39,62 +39,118 @@ linkedin_research_task:
 
 research_prospect_task:
   description: >
-    Conduct thorough research on {first_name} {last_name}, their role as
-    {title} at {company}, and the company itself.
-    Use the validated LinkedIn profile from the previous task and other publicly
-    available sources to gather comprehensive information.
+    Research {first_name} {last_name} and {company} to discover their remarkable achievements, 
+    successes, and impressive initiatives that deserve genuine recognition and appreciation.
 
-    Research areas to focus on:
-    1. Professional background and career progression
-    2. Company information, industry, and recent news
-    3. Professional interests, achievements, and challenges
-    4. Industry trends and pain points relevant to their role
-    5. Company's data/technology initiatives (if any)
+    RESEARCH PRIORITIES (find achievements first):
+    1. {first_name}'s notable career accomplishments, awards, recognitions, or leadership achievements
+    2. {company}'s impressive results, growth milestones, awards, or industry recognition
+    3. Recent initiatives, programs, or innovations they've launched that show excellence
+    4. Unique aspects of their organization that set them apart from peers
+    5. Any impressive metrics, outcomes, or impact they've achieved
+
+    SECONDARY RESEARCH (after finding achievements):
+    6. Current role responsibilities and scope
+    7. Industry context and typical operational challenges
+    8. Recent company developments or expansion
+
+    RESEARCH APPROACH:
+    - Look for success stories, not just basic information
+    - Find specific achievements worth congratulating
+    - Identify what makes them/their organization special
+    - Focus on positive accomplishments and innovations
 
     Important: When using tools, provide input as single dictionaries only:
-    - Search: {"search_query": "your query"}
+    - Search: {"search_query": "your query"}  
     - Website: {"website_url": "https://url"}
     Make ONE tool call at a time.
   expected_output: >
-    A comprehensive dossier on {first_name} {last_name} and {company},
-    including recent professional activities, potential pain points, interests,
-    industry challenges, and any other information that could be used to
-    personalize communication about Keboola's data platform.
+    Research summary (maximum 300 words) highlighting:
+    1. {first_name}'s most impressive professional achievements and recognitions
+    2. {company}'s notable successes, awards, growth, or unique accomplishments
+    3. Recent initiatives or programs that demonstrate their excellence/innovation
+    4. What makes them stand out in their industry or field
+    5. Any metrics or outcomes that show their impact/success
 
 personalize_content_task:
   description: >
-    Using the research on {first_name} {last_name} and {company},
-    identify specific ways that Keboola's unified data & AI orchestration platform
-    can address their potential needs or align with their professional interests.
+    Create talking points that genuinely appreciate {first_name} {last_name}'s achievements
+    and connect their success to how Keboola has helped similar high-performing organizations.
 
-    Consider:
-    1. If selling_intent is provided: "{selling_intent}", use this as primary guidance
-    2. If no selling_intent: Create relevant Keboola use cases based on their industry, role, and company needs
-    3. Keboola's key benefits: 4x productivity boost, 73% faster project delivery, 80% less maintenance
-    4. 700+ connectors, AI-powered automation, enterprise governance
-    5. Industry-specific pain points that Keboola can solve
+    RESEARCH PROCESS:
+    1. Search Keboola's website (keboola.com) for customer case studies, testimonials, and success stories
+    2. SEARCH SPECIFICALLY for Keboola customers in education, schools, universities, or non-profit sectors 
+    3. Use search queries like "keboola education customer case study" or "keboola school university"
+    4. Look for REAL customer company names that would be relevant to the prospect's industry/role
+    4. Find specific quantified results from actual customer testimonials and case studies
+    5. NEVER use placeholders or make up customer names - ONLY use companies you find through research
+    6. If no relevant sector customers found, use general proven outcomes without specific company names
 
-    Look for unique angles or shared points of interest that can create
-    a strong personal connection in the email.
+    TALKING POINTS STRUCTURE:
+    1. [Genuine appreciation for specific achievement from the prospect research]
+    2. [Recognition of what makes their organization impressive/unique]
+    3. [How similar successful organizations use Keboola to amplify their impact - with specific customer example]
+
+    TONE: Appreciative and respectful. Start with genuine recognition of their accomplishments.
+    Show you've done your homework and respect their success.
+    
+    IMPORTANT: Do NOT make assumptions about their industry or challenges. 
+    Base everything on the actual research findings about their specific achievements.
   expected_output: >
-    A list of personalized talking points and angles to use in the email,
-    connecting {first_name} {last_name}'s background, interests, or challenges
-    with specific benefits of Keboola's data platform. Include specific features,
-    use cases, and value propositions most relevant to their situation.
+    3 talking points that start with genuine appreciation:
+    
+    1. [Specific achievement or success worthy of recognition - be genuine and specific]
+    2. [What makes their organization impressive or unique based on research]
+    3. [How relevant successful organizations (preferably education/similar sector) use Keboola to amplify their impact - use ONLY real customer names and results found through actual Keboola website research, or speak generally about proven outcomes if sector-relevant names aren't found]
 
 write_email_task:
   description: >
-    Craft a highly personalized email to {first_name} {last_name} about Keboola's
-    data and AI orchestration platform. Use the research and personalized content
-    to create an email that feels individual, relevant, and engaging.
+    Write an appreciative, respectful email to {first_name} {last_name} that starts with genuine
+    recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
 
-    The email should:
-    1. Demonstrate understanding of their role and challenges
-    2. Showcase how Keboola can provide specific value to their situation
-    3. Reference validated prospect information from research
-    4. Include relevant industry insights
-    5. Have a clear call-to-action for further conversation
-    6. Maintain a professional yet personable tone
+    EMAIL STRUCTURE (Maximum 100 words):
+    1. Opening: One sentence appreciation for specific achievement (be authentic but brief)
+    2. Connection: One sentence about relevant Keboola customer success (education/similar sector preferred) with name and result
+    3. Confident solution statement: State how Keboola (as a company) will help amplify their specific success (use "will" not "can", avoid "implementing" - focus on partnership/collaboration)
+    4. Closing: Include "Best," "Best regards," or "Cheers," (automation will add signature)
+
+    BREVITY REQUIREMENTS:
+    - Maximum 100 words total
+    - 3 sentences maximum (plus closing)
+    - Each sentence under 25 words
+    - Remove all unnecessary words and phrases
+    - Always include closing like "Best," "Best regards," or "Cheers,"
+
+    TONE REQUIREMENTS:
+    - Start with genuine appreciation and respect for their accomplishments
+    - Show you've researched and respect their success
+    - Collegial and respectful, never condescending
+    - Focus on amplifying existing success, not fixing problems
+    - Professional peer-to-peer conversation
+    - CONFIDENT final offer - assert the solution, don't ask permission or "explore"
+
+    CRITICAL REQUIREMENTS:
+    - Base appreciation on actual research findings, not assumptions
+    - NO generic industry statements or hardcoded challenges
+    - Be specific about their achievements 
+    - Use REAL Keboola customer names and quantified results from website research
+    - NEVER use placeholders like "[Customer Name]" or "[Keboola Customer]"
+
+    AVOID:
+    - Generic congratulations
+    - Assumptions about their challenges
+    - Problem-focused language
+    - Condescending tone
+    - Weak language like "I'd love to explore" or "would you like to discuss" 
+    - Implementation language like "implementing Keboola" - focus on company partnership instead
+    - Asking permission - be confident in your solution offering
+
+    WRITING STYLE:
+    - Short sentences (10-15 words max)
+    - No fluff or filler words
+    - Active voice only
+    - Bullet points if needed for clarity
+    - Personal pronouns (you, your)
 
     IMPORTANT: Extract validated prospect information from previous research tasks and include
     in the final output. Look for validated information in the LinkedIn research report and include:
@@ -105,9 +161,9 @@ write_email_task:
     Parse the LinkedIn research report carefully and extract any discovered information with sufficient confidence.
   expected_output: >
     A PersonalizedEmail object containing:
-    1. A compelling, personalized subject line (max 10 words, trigger curiosity)
-    2. The body of the email, written in a conversational yet professional tone
-    3. Follow-up notes for the sales person with specific talking points for future interactions
+    1. A punchy, curiosity-triggering subject line (max 8 words)
+    2. A crisp email body under 150 words that gets straight to value
+    3. Concise follow-up notes for the sales person with key talking points
     4. validated_title: Job title (only if HIGH confidence from research)
     5. validated_linkedin_profile: LinkedIn profile URL (if found/validated)
     6. validated_country: Country location (only if HIGH confidence from research)
