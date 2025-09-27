@@ -108,18 +108,19 @@ write_email_task:
     Write an appreciative, respectful email to {first_name} {last_name} that starts with genuine
     recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
 
-    EMAIL STRUCTURE (Maximum 100 words):
+    EMAIL STRUCTURE (Maximum 120 words):
     1. Opening: One sentence appreciation for specific achievement (be authentic but brief)
-    2. Connection: One sentence about relevant Keboola customer success (education/similar sector preferred) with name and result
-    3. Confident solution statement: State how Keboola (as a company) will help amplify their specific success (use "will" not "can", avoid "implementing" - focus on partnership/collaboration)
-    4. Closing: Include "Best," "Best regards," or "Cheers," (automation will add signature)
+    2. Connection: One sentence about relevant Keboola customer success with name and result
+    3. Confident solution statement: State how Keboola will help amplify their specific success (partnership focused)
+    4. Call-to-action: Direct ask for a brief call/meeting (one sentence, confident)
+    5. Closing: MUST include "Best," "Best regards," or "Cheers," on new line (automation will add signature)
 
     BREVITY REQUIREMENTS:
-    - Maximum 100 words total
-    - 3 sentences maximum (plus closing)
+    - Maximum 120 words total
+    - 4 sentences maximum (plus closing)
     - Each sentence under 25 words
     - Remove all unnecessary words and phrases
-    - Always include closing like "Best," "Best regards," or "Cheers,"
+    - MUST include call-to-action and closing like "Best," "Best regards," or "Cheers," on separate line
 
     TONE REQUIREMENTS:
     - Start with genuine appreciation and respect for their accomplishments
@@ -162,7 +163,7 @@ write_email_task:
   expected_output: >
     A PersonalizedEmail object containing:
     1. A punchy, curiosity-triggering subject line (max 8 words)
-    2. A crisp email body under 150 words that gets straight to value
+    2. A crisp email body under 120 words with clear call-to-action and closing
     3. Concise follow-up notes for the sales person with key talking points
     4. validated_title: Job title (only if HIGH confidence from research)
     5. validated_linkedin_profile: LinkedIn profile URL (if found/validated)
