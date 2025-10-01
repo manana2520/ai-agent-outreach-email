@@ -109,18 +109,20 @@ write_email_task:
     recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
 
     EMAIL STRUCTURE (Maximum 120 words):
-    1. Opening: One sentence appreciation for specific achievement (be authentic but brief)
+    1. Personal opening: "{first_name}, [specific appreciation]" (use their first name, be authentic but brief)
     2. Connection: One sentence about relevant Keboola customer success with name and result
     3. Confident solution statement: State how Keboola will help amplify their specific success (partnership focused)
     4. Call-to-action: Direct ask for a brief call/meeting (one sentence, confident)
-    5. Closing: MUST include "Best," "Best regards," or "Cheers," on new line (automation will add signature)
+    5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
+
+    CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
 
     BREVITY REQUIREMENTS:
     - Maximum 120 words total
     - 4 sentences maximum (plus closing)
     - Each sentence under 25 words
     - Remove all unnecessary words and phrases
-    - MUST include call-to-action and closing like "Best," "Best regards," or "Cheers," on separate line
+    - MUST include call-to-action and MANDATORY closing "Best," on separate line as final text
 
     TONE REQUIREMENTS:
     - Start with genuine appreciation and respect for their accomplishments
@@ -138,13 +140,15 @@ write_email_task:
     - NEVER use placeholders like "[Customer Name]" or "[Keboola Customer]"
 
     AVOID:
-    - Generic congratulations
+    - Generic congratulations or openings like "I commend [Company]'s reputation"
+    - Third-person references - always start with first name: "{first_name}, your..."
     - Assumptions about their challenges
     - Problem-focused language
     - Condescending tone
     - Weak language like "I'd love to explore" or "would you like to discuss" 
     - Implementation language like "implementing Keboola" - focus on company partnership instead
     - Asking permission - be confident in your solution offering
+    - Forgetting the mandatory closing "Best," on final line
 
     WRITING STYLE:
     - Short sentences (10-15 words max)
