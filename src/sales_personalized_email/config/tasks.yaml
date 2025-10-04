@@ -109,8 +109,8 @@ write_email_task:
     recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
 
     EMAIL STRUCTURE (Maximum 120 words):
-    1. Personal opening: "{first_name}, [specific appreciation]" (use their first name, be authentic but brief)
-    2. Connection: One sentence about relevant Keboola customer success with name and result
+    1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)
+    2. Connection: "We've helped companies like [Customer] achieve [result]" - establish credibility with customer reference
     3. Confident solution statement: State how Keboola will help amplify their specific success (partnership focused)
     4. Call-to-action: Direct ask for a brief call/meeting (one sentence, confident)
     5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
@@ -118,7 +118,13 @@ write_email_task:
     CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
     
     EXAMPLE EMAIL FORMAT:
-    {first_name}, [achievement]. [Customer example]. [Solution]. [CTA]?
+    {first_name}, [achievement].
+    
+    We've helped companies like [Customer] achieve [specific result].
+    
+    Partnering with Keboola will [specific benefit for their situation].
+    
+    [CTA question]?
     
     Best,
 
@@ -128,6 +134,8 @@ write_email_task:
     - Each sentence under 25 words
     - Remove all unnecessary words and phrases
     - MUST include call-to-action and MANDATORY closing "Best," on separate line as final text
+    - Use proper paragraph breaks between sentences for readability
+    - CAPITALIZE first name properly (Milan not milan)
 
     TONE REQUIREMENTS:
     - Start with genuine appreciation and respect for their accomplishments
@@ -146,7 +154,8 @@ write_email_task:
 
     AVOID:
     - Generic congratulations or openings like "I commend [Company]'s reputation"
-    - Third-person references - always start with first name: "{first_name}, your..."
+    - Third-person references - always start with first name: "{first_name}, your..." 
+    - Lowercase first names - MUST capitalize properly (Milan not milan)
     - Assumptions about their challenges
     - Problem-focused language
     - Condescending tone
