@@ -116,6 +116,11 @@ write_email_task:
     5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
 
     CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
+    
+    EXAMPLE EMAIL FORMAT:
+    {first_name}, [achievement]. [Customer example]. [Solution]. [CTA]?
+    
+    Best,
 
     BREVITY REQUIREMENTS:
     - Maximum 120 words total
@@ -167,8 +172,10 @@ write_email_task:
   expected_output: >
     A PersonalizedEmail object containing:
     1. A punchy, curiosity-triggering subject line (max 8 words)
-    2. A crisp email body under 120 words with clear call-to-action and closing
+    2. A crisp email body under 120 words with clear call-to-action and MANDATORY closing "Best,"
     3. Concise follow-up notes for the sales person with key talking points
+    
+    CRITICAL: The email_body MUST end with "Best," on a separate line.
     4. validated_title: Job title (only if HIGH confidence from research)
     5. validated_linkedin_profile: LinkedIn profile URL (if found/validated)
     6. validated_country: Country location (only if HIGH confidence from research)
