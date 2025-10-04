@@ -89,7 +89,9 @@ personalize_content_task:
     TALKING POINTS STRUCTURE:
     1. [Genuine appreciation for specific achievement from the prospect research]
     2. [Recognition of what makes their organization impressive/unique]
-    3. [How similar successful organizations use Keboola to amplify their impact - with specific customer example]
+    3. [If selling_intent provided: Focus on HOW KEBOOLA ADDRESSES THAT SPECIFIC USE CASE. If no selling_intent: How similar organizations use Keboola generally]
+    
+    CRITICAL: If selling_intent is "{selling_intent}" - make ALL talking points about this specific use case, NOT generic platform benefits.
 
     TONE: Appreciative and respectful. Start with genuine recognition of their accomplishments.
     Show you've done your homework and respect their success.
@@ -101,7 +103,7 @@ personalize_content_task:
     
     1. [Specific achievement or success worthy of recognition - be genuine and specific]
     2. [What makes their organization impressive or unique based on research]
-    3. [How relevant successful organizations (preferably education/similar sector) use Keboola to amplify their impact - use ONLY real customer names and results found through actual Keboola website research, or speak generally about proven outcomes if sector-relevant names aren't found]
+    3. [If selling_intent provided: How Keboola solves THAT SPECIFIC USE CASE with examples. If no selling_intent: How relevant organizations use Keboola generally. NEVER ignore the selling_intent if provided.]
 
 write_email_task:
   description: >
@@ -111,18 +113,20 @@ write_email_task:
     EMAIL STRUCTURE (Maximum 120 words):
     1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)
     2. Connection: "We've helped companies like [Customer] achieve [result]" - establish credibility with customer reference
-    3. Confident solution statement: State how Keboola will help amplify their specific success (partnership focused)
+    3. Confident solution statement: If selling_intent provided, focus on how Keboola addresses THAT SPECIFIC USE CASE. If no selling_intent, general partnership benefits.
     4. Call-to-action: Direct ask for a brief call/meeting (one sentence, confident)
     5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
 
     CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
     
+    CRITICAL: If selling_intent is provided, the email must focus on that SPECIFIC use case, not generic platform benefits.
+    
     EXAMPLE EMAIL FORMAT:
     {first_name}, [achievement].
     
-    We've helped companies like [Customer] achieve [specific result].
+    We've helped companies like [Customer] achieve [specific result] with [SPECIFIC USE CASE if provided].
     
-    Partnering with Keboola will [specific benefit for their situation].
+    Keboola can help you [address specific use case OR general partnership benefits].
     
     [CTA question]?
     
