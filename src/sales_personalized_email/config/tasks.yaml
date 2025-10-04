@@ -11,22 +11,23 @@ linkedin_research_task:
 
     VALIDATION REQUIREMENTS:
     1. If linkedin_profile is provided: Always validate it (check if accessible and matches prospect)
-    2. If title is missing: Research and find it (only return if HIGH confidence)
-    3. If country is missing: Research and find it (only return if HIGH confidence)
+    2. If title is missing: Research and find it (return if HIGH or MEDIUM confidence)
+    3. If country is missing: Research and find it (return if HIGH or MEDIUM confidence)
     4. If linkedin_profile is missing: Search for correct profile
 
     CONFIDENCE ASSESSMENT:
     - HIGH: Exact name/company match, verified sources, clear information, profile shows correct person
-    - MEDIUM: Good match but some uncertainty (still acceptable for LinkedIn profiles)
-    - LOW: Partial matches, common names, ambiguous results
-    - Return discovered fields when confidence is HIGH or MEDIUM (be more permissive for LinkedIn profiles)
+    - MEDIUM: Good match with minor uncertainty (STILL ACCEPTABLE - use this liberally)
+    - LOW: Partial matches, common names, highly ambiguous results
+    - BE AGGRESSIVE: Return discovered fields when confidence is HIGH or MEDIUM
+    - FOR EXECUTIVES/CEOS: Be especially thorough - they usually have public profiles
 
     Use targeted search queries and validate information from multiple sources.
   expected_output: >
     A detailed report containing:
     1. VALIDATED LINKEDIN PROFILE: [URL] (return if found and confidence is HIGH/MEDIUM)
-    2. DISCOVERED TITLE: [title] (only if confidence is HIGH)
-    3. DISCOVERED COUNTRY: [country] (only if confidence is HIGH)
+    2. DISCOVERED TITLE: [title] (if confidence is HIGH or MEDIUM)
+    3. DISCOVERED COUNTRY: [country] (if confidence is HIGH or MEDIUM)
     4. CONFIDENCE LEVELS: State confidence (HIGH/MEDIUM/LOW) for each field
     5. SEARCH PROCESS: Brief summary of search queries used and results found
 
@@ -36,6 +37,12 @@ linkedin_research_task:
     - Country: United States (CONFIDENCE: HIGH - confirmed from profile location)
 
     Be thorough in your search and don't be overly cautious - return LinkedIn profiles if they clearly match the person.
+    
+    CRITICAL: For executives, CEOs, or well-known professionals, be more aggressive in research:
+    - Use multiple search variations: "Pavel Dolezal CEO", "Pavel Dolezal Keboola", "Pavel Dolezal LinkedIn"
+    - Check company websites, press releases, news articles
+    - Cross-reference multiple sources
+    - Don't be overly conservative - if it's clearly the right person, return it
 
 research_prospect_task:
   description: >
@@ -91,7 +98,12 @@ personalize_content_task:
     2. [Recognition of what makes their organization impressive/unique]
     3. [If selling_intent provided: Focus on HOW KEBOOLA ADDRESSES THAT SPECIFIC USE CASE. If no selling_intent: How similar organizations use Keboola generally]
     
-    CRITICAL: If selling_intent is "{selling_intent}" - make ALL talking points about this specific use case, NOT generic platform benefits.
+    CRITICAL SELLING INTENT ENFORCEMENT: 
+    - If selling_intent is provided as "{selling_intent}", then ALL talking points must focus on this EXACT use case
+    - Do NOT mention generic data platform benefits 
+    - Do NOT talk about data transformation, analytics, or reporting unless that's the specific selling_intent
+    - Focus ONLY on how Keboola addresses the specific selling_intent: "{selling_intent}"
+    - Example: If selling_intent is "coffee machine", talk about coffee-related data, not financial data
 
     TONE: Appreciative and respectful. Start with genuine recognition of their accomplishments.
     Show you've done your homework and respect their success.
@@ -119,7 +131,11 @@ write_email_task:
 
     CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
     
-    CRITICAL: If selling_intent is provided, the email must focus on that SPECIFIC use case, not generic platform benefits.
+    CRITICAL SELLING INTENT ENFORCEMENT FOR EMAIL:
+    - If selling_intent "{selling_intent}" is provided, the ENTIRE email must focus on this specific use case
+    - Do NOT mention generic "data transformation", "analytics", "reporting", or "operational efficiency" 
+    - Talk specifically about "{selling_intent}" and how Keboola helps with that exact use case
+    - Example: If selling_intent is "coffee machine", discuss coffee machine operations, maintenance data, supply chain for coffee, etc.
     
     EXAMPLE EMAIL FORMAT:
     {first_name}, [achievement].
