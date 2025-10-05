@@ -135,6 +135,11 @@ write_email_task:
   description: >
     Write an appreciative, respectful email to {first_name} {last_name} that starts with genuine
     recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
+    
+    CRITICAL: SELLING INTENT "{selling_intent}" ENFORCEMENT:
+    When selling_intent is provided, you MUST use those exact keywords throughout the email.
+    Example: If selling_intent="coffee machine", your email MUST discuss coffee, machines, facilities, or maintenance.
+    DO NOT write generic data platform emails when specific intent is provided!
 
     EMAIL STRUCTURE (Maximum 120 words):
     1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)

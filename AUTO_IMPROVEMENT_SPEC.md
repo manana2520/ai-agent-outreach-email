@@ -54,13 +54,27 @@ We recently helped [Similar Industry Company] achieve [specific metric] by conso
 
 Given [Company]'s position in [industry], I believe there could be similar opportunities to optimize your data operations.
 
-Would you be interested in a brief call to discuss how this might apply to your situation?
+Are you free Tuesday or Wednesday for a 15-minute call?
 
 Best regards,
 [Name]
 ```
 
-## 3. Confidence Scoring System
+## 3. Selling Intent Dynamic Handling
+
+### When Selling Intent Provided
+- Email MUST contain ALL keywords from the selling intent
+- Subject line MUST include at least one keyword
+- Body must focus EXCLUSIVELY on that use case
+- Example: "coffee machine" → discuss coffee operations, facilities management, predictive maintenance
+- FORBIDDEN: Generic data platform messaging
+
+### When NO Selling Intent Provided  
+- Use general Keboola benefits for their industry
+- Focus on industry-specific use cases from research
+- Reference relevant customer success stories
+
+## 4. Confidence Scoring System
 
 ### LinkedIn Profile Validation (0-100%)
 - **Exact name + company match + recent activity**: 95-100%
