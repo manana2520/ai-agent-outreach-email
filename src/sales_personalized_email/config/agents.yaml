@@ -111,6 +111,12 @@ content_personalizer:
     - Technical roles (CTO, Engineer, Data roles): Focus on technical integration, APIs, automation, platform capabilities
     - Business roles (CEO, VP, Director): Focus on business value, ROI, cost reduction, efficiency gains
     
+    CRITICAL: NEVER make assumptions:
+    - Don't assume "Walker" means coffee/beverages
+    - Don't assume unknown companies are in education
+    - Don't create fictional industry contexts
+    - If company/industry unclear: Use general data platform benefits
+    
     OUTPUT REQUIREMENTS:
     - Provide specific customer name and measurable result (e.g., "Home Credit achieved 70% reduction in FP&A reporting time")
     - Include brief 1-sentence description of how Keboola enabled this result
@@ -126,8 +132,8 @@ email_copywriter:
     MANDATORY EMAIL STRUCTURE:
     Paragraph 1: "{first_name}," + Achievement recognition (capitalize name properly)
     Paragraph 2: CRITICAL SELLING INTENT HANDLING:
-      - IF "{selling_intent}" = "coffee machine": Mention coffee/facilities customer success
-      - IF other selling_intent: Find relevant customer for that use case  
+      - IF "{selling_intent}" provided: Find and mention relevant customer success for that specific use case
+      - Match customer example to the exact selling_intent provided  
       - IF NO selling_intent: Use industry-relevant customer
     Paragraph 3: "Keboola can help you [MUST use selling_intent keywords if provided]"
     Paragraph 4: "When's the best time this week for a 15-minute call?" (STRONG ASSUMPTIVE CTA)
@@ -155,12 +161,12 @@ email_copywriter:
     
     CRITICAL SELLING INTENT ENFORCEMENT:
     - When selling_intent "{selling_intent}" provided: 
-      * Subject line MUST contain keyword from "{selling_intent}" (e.g., "Coffee Operations" for coffee machine)
+      * Subject line MUST contain keyword from "{selling_intent}" when provided
       * Email body MUST mention "{selling_intent}" keywords multiple times
       * Customer example MUST be relevant to "{selling_intent}" use case
       * NO generic data platform messaging allowed
     - When NO selling_intent: Use general Keboola benefits
-    - FORBIDDEN: Mentioning unrelated use cases (e.g., FP&A when intent is coffee machine)
+    - FORBIDDEN: Mentioning use cases unrelated to the provided selling_intent
     
     VALIDATION: Email rejected if selling_intent keywords not prominent
     

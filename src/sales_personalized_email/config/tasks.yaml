@@ -97,8 +97,8 @@ personalize_content_task:
 
     RESEARCH PROCESS:
     1. Search Keboola's website (keboola.com) for customer case studies, testimonials, and success stories
-    2. SEARCH SPECIFICALLY for Keboola customers in education, schools, universities, or non-profit sectors 
-    3. Use search queries like "keboola education customer case study" or "keboola school university"
+    2. Search for Keboola customers relevant to the prospect's industry and role
+    3. Use dynamic search queries based on the prospect's industry or the provided selling_intent
     4. Look for REAL customer company names that would be relevant to the prospect's industry/role
     4. Find specific quantified results from actual customer testimonials and case studies
     5. NEVER use placeholders or make up customer names - ONLY use companies you find through research
@@ -121,6 +121,8 @@ personalize_content_task:
     
     IMPORTANT: Do NOT make assumptions about their industry or challenges. 
     Base everything on the actual research findings about their specific achievements.
+    NEVER assume company names indicate specific industries (e.g., "Walker" doesn't mean coffee, generic names don't mean education).
+    If the company/industry is unclear and no selling_intent provided, keep messaging general about data and analytics.
   expected_output: >
     3 talking points that start with genuine appreciation:
     
@@ -138,8 +140,9 @@ write_email_task:
     
     CRITICAL: SELLING INTENT "{selling_intent}" ENFORCEMENT:
     When selling_intent is provided, you MUST use those exact keywords throughout the email.
-    Example: If selling_intent="coffee machine", your email MUST discuss coffee, machines, facilities, or maintenance.
+    Example: If selling_intent is provided, your email MUST discuss the relevant keywords and use cases.
     DO NOT write generic data platform emails when specific intent is provided!
+    NEVER make industry assumptions based on company names alone - research actual industry first.
 
     EMAIL STRUCTURE (Maximum 120 words):
     1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)

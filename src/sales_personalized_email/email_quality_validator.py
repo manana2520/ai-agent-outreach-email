@@ -188,13 +188,18 @@ class EmailQualityValidator:
         
         # 2. Specific Use Case Focus (5 points)
         use_case_score = 0
-        if 'coffee machine' in selling_intent:
-            if 'coffee' in email_lower:
-                use_case_score += 2
-            if any(term in email_lower for term in ['facilities', 'consumption', 'maintenance', 'machine']):
-                use_case_score += 2
-            if any(term in email_lower for term in ['predictive', 'analytics', 'monitoring']):
-                use_case_score += 1
+        # Dynamic scoring based on selling_intent keywords
+        if selling_intent:
+            # Extract meaningful keywords from selling_intent
+            intent_keywords = [word for word in selling_intent.split() if len(word) > 2]
+            
+            # Count how many intent keywords appear in the email
+            keywords_found = sum(1 for keyword in intent_keywords if keyword in email_lower)
+            
+            # Score based on keyword coverage
+            if intent_keywords:
+                coverage_ratio = keywords_found / len(intent_keywords)
+                use_case_score = int(5 * coverage_ratio)  # Up to 5 points based on coverage
         elif 'crm' in selling_intent:
             if 'crm' in email_lower:
                 use_case_score += 3
@@ -215,11 +220,14 @@ class EmailQualityValidator:
         
         # 3. Avoid Generic Data Platform Messaging When Specific Intent Given (2 points)
         generic_penalty = 0
-        if selling_intent and 'coffee machine' in selling_intent:
-            # Strong penalty for generic data platform messaging when coffee machine intent specified
-            if 'data platform' in email_lower and 'coffee' not in email_lower:
+        if selling_intent:
+            # Strong penalty for generic data platform messaging when specific intent provided
+            intent_keywords = [word for word in selling_intent.split() if len(word) > 2]
+            has_intent_keyword = any(keyword in email_lower for keyword in intent_keywords)
+            
+            if 'data platform' in email_lower and not has_intent_keyword:
                 generic_penalty = -3
-            elif any(term in email_lower for term in ['generic data', 'data transformation', 'analytics platform']) and 'coffee' not in email_lower:
+            elif any(term in email_lower for term in ['generic data', 'data transformation', 'analytics platform']) and not has_intent_keyword:
                 generic_penalty = -2
         
         score_details['generic_penalty'] = generic_penalty

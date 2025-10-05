@@ -258,12 +258,20 @@ CONFIDENCE HANDLING: Use specific achievements when LinkedIn confidence >70%, co
 4. **Technical role** (CTO, Data Engineer)
 5. **Business role** (VP Sales, CMO)
 6. **Various industries** (Finance, Retail, Manufacturing)
+7. **No hardcoding validation** - Verify no hardcoded examples (coffee, education, etc.)
+   - Test with diverse selling_intents to ensure dynamic handling
+   - Verify agent doesn't default to specific hardcoded examples
+   - Ensure customer examples are researched, not hardcoded
 
 ### Expected Outcomes
 - High confidence: Specific achievement recognition, score >85
 - Low confidence: Generic but professional messaging, score >70
 - Technical role: Technical use cases and terminology
 - Business role: Business value and ROI focus
+- No hardcoding: Dynamic content generation based on actual inputs
+  - No default to "education" or "coffee" when unrelated to prospect
+  - Selling intent keywords properly reflected in output
+  - Customer examples dynamically researched, not hardcoded
 
 ## 10. Monitoring & Maintenance
 

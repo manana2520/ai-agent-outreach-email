@@ -212,7 +212,7 @@ if __name__ == "__main__":
         "phone": "",
         "country": "",
         "linkedin_profile": "",
-        "selling_intent": "coffee machine data analytics and reporting"
+        "selling_intent": ""  # Test with no specific intent to verify dynamic handling
     }
     
     run_auto_improvement_agent(test_inputs)
