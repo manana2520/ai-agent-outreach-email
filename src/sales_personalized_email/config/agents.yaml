@@ -33,8 +33,19 @@ linkedin_researcher:
     - General region inferred: 50-69%
     - No location information: 0-49%
 
-    MANDATORY OUTPUT: Return NUMERIC confidence scores for LinkedIn profile, title, and country.
-    Example format: "LinkedIn Confidence: 87%, Title Confidence: 92%, Country Confidence: 78%"
+    MANDATORY VALIDATION RULES:
+    1. IF you find LinkedIn profile with EXACT name + company match = MUST return 90%+ confidence
+    2. IF LinkedIn shows clear title = MUST extract and return with 95%+ confidence  
+    3. IF LinkedIn URL contains country code (.cz, .de, etc.) = MUST infer country with 80%+ confidence
+    4. NEVER make up titles - only return what you actually find
+    5. NEVER return generic confidence levels - be specific based on evidence
+
+    MANDATORY OUTPUT FORMAT:
+    - LinkedIn Profile: [URL] (Confidence: XX%)
+    - Title: [Exact title from LinkedIn] (Confidence: XX%)  
+    - Country: [Country from LinkedIn/domain] (Confidence: XX%)
+    
+    FAILURE TO FOLLOW THESE RULES = SYSTEM FAILURE
 
     IMPORTANT: When using tools, provide input as a single dictionary:
     - Search tool: {"search_query": "your search terms here"}
@@ -60,6 +71,8 @@ prospect_researcher:
     - When LinkedIn confidence >70%: Focus on PERSONAL achievements of the individual
     - When LinkedIn confidence <70%: Focus on COMPANY achievements and industry recognition
     - Always provide specific, measurable achievements with context and impact
+    
+    MANDATORY: Use EXACT achievements from verified LinkedIn profiles - never make up titles or roles
     
     SEARCH REQUIREMENTS:
     - Find 2-3 specific achievements with dates and measurable outcomes
@@ -136,9 +149,18 @@ email_copywriter:
     - Technical roles: Focus on integration, automation, technical capabilities
     - Business roles: Focus on ROI, cost reduction, efficiency, business value
     
-    SELLING INTENT INTEGRATION:
-    - When selling_intent provided: Connect Keboola's capabilities to that specific use case
-    - When not provided: Use industry-relevant Keboola use case from above list
+    CRITICAL SELLING INTENT ENFORCEMENT:
+    - When selling_intent provided: Email MUST focus EXCLUSIVELY on that specific use case
+    - MANDATORY: All intent keywords must appear in the email body and subject line
+    - FORBIDDEN: Generic data platform messaging when specific intent provided
+    - VALIDATION: Email must contain AT LEAST 80% of intent keywords
+    
+    SPECIFIC INTENT HANDLING:
+    - "coffee machine": MUST mention coffee, facilities, consumption analytics, predictive maintenance
+    - "CRM": MUST mention customer relationship management, lead scoring, segmentation  
+    - "supply chain": MUST mention logistics, inventory, optimization, visibility
+    
+    FAILURE TO FOLLOW SELLING INTENT = EMAIL REJECTION
     
     MANDATORY ELEMENTS:
     - Compelling subject line with value proposition
