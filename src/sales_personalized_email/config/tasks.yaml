@@ -114,7 +114,7 @@ personalize_content_task:
     - Do NOT mention generic data platform benefits 
     - Do NOT talk about data transformation, analytics, or reporting unless that's the specific selling_intent
     - Focus ONLY on how Keboola addresses the specific selling_intent: "{selling_intent}"
-    - Example: If selling_intent is "coffee machine", talk about coffee-related data, not financial data
+    - If no selling_intent provided, use general Keboola benefits relevant to their industry
 
     TONE: Appreciative and respectful. Start with genuine recognition of their accomplishments.
     Show you've done your homework and respect their success.
@@ -126,7 +126,10 @@ personalize_content_task:
     
     1. [Specific achievement or success worthy of recognition - be genuine and specific]
     2. [What makes their organization impressive or unique based on research]
-    3. [If selling_intent provided: How Keboola solves THAT SPECIFIC USE CASE with examples. If no selling_intent: How relevant organizations use Keboola generally. NEVER ignore the selling_intent if provided.]
+    3. [DYNAMIC SELLING INTENT HANDLING:
+       - IF selling_intent "{selling_intent}" is provided: Focus EXCLUSIVELY on this exact use case with Keboola solutions
+       - IF NO selling_intent provided: Use general Keboola benefits for their industry
+       - NEVER ignore selling_intent when provided - this is MANDATORY]
 
 write_email_task:
   description: >
@@ -136,7 +139,9 @@ write_email_task:
     EMAIL STRUCTURE (Maximum 120 words):
     1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)
     2. Connection: "We've helped companies like [Customer] achieve [result]" - establish credibility with customer reference
-    3. Confident solution statement: If selling_intent provided, focus on how Keboola addresses THAT SPECIFIC USE CASE. If no selling_intent, general partnership benefits.
+    3. Confident solution statement: 
+       - IF selling_intent "{selling_intent}" provided: Focus on how Keboola addresses THAT SPECIFIC USE CASE using keywords from the intent
+       - IF NO selling_intent provided: Use general Keboola partnership benefits for their industry
     4. Call-to-action: Assumptive CTA that assumes interest and asks for timing (avoid "Would you be open to..." - instead use "When's the best time for..." or "Are you free Tuesday or Wednesday for...")
     5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
 
@@ -146,12 +151,9 @@ write_email_task:
     - If selling_intent "{selling_intent}" is provided, the ENTIRE email must focus on this specific use case
     - MANDATORY: Email subject and body MUST contain key words from the selling intent
     - FORBIDDEN: Generic "data transformation", "analytics", "reporting", or "operational efficiency" when specific intent provided
-    - SPECIFIC REQUIREMENTS:
-      * "coffee machine" = MUST mention coffee, facilities, consumption, maintenance, predictive analytics
-      * "CRM" = MUST mention customer management, lead scoring, segmentation
-      * "supply chain" = MUST mention logistics, inventory, optimization
-    - VALIDATION: Email will be rejected if it ignores the specified selling intent
-    - EXAMPLE: selling_intent "coffee machine" = Subject: "Coffee Machine Analytics" + body focuses on coffee operations
+    - DYNAMIC HANDLING: Use the actual selling_intent keywords in subject line and email body
+    - If NO selling_intent provided: Use general Keboola value propositions relevant to their industry
+    - VALIDATION: Email will be rejected if it ignores the specified selling intent when provided
     
     EXAMPLE EMAIL FORMAT:
     {first_name}, [achievement].

@@ -151,15 +151,12 @@ email_copywriter:
     - Business roles: Focus on ROI, cost reduction, efficiency, business value
     
     CRITICAL SELLING INTENT ENFORCEMENT:
-    - When selling_intent provided: Email MUST focus EXCLUSIVELY on that specific use case
+    - When selling_intent "{selling_intent}" provided: Email MUST focus EXCLUSIVELY on that specific use case
     - MANDATORY: All intent keywords must appear in the email body and subject line
     - FORBIDDEN: Generic data platform messaging when specific intent provided
-    - VALIDATION: Email must contain AT LEAST 80% of intent keywords
-    
-    SPECIFIC INTENT HANDLING:
-    - "coffee machine": MUST mention coffee, facilities, consumption analytics, predictive maintenance
-    - "CRM": MUST mention customer relationship management, lead scoring, segmentation  
-    - "supply chain": MUST mention logistics, inventory, optimization, visibility
+    - DYNAMIC HANDLING: Extract keywords from the actual selling_intent and use them prominently
+    - If NO selling_intent provided: Use general Keboola value propositions for their industry
+    - VALIDATION: Email must contain the specific selling_intent keywords when provided
     
     FAILURE TO FOLLOW SELLING INTENT = EMAIL REJECTION
     

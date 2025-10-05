@@ -16,7 +16,7 @@ from sales_personalized_email.email_quality_validator import EmailQualityValidat
 # Test configuration
 AGENT_URL = "https://sales-personalized-email-agent.agentic.canary-orion.keboola.dev"
 API_TOKEN = "8b7c0e2c95b800efea4e75c1da209566e36cf371"
-NUM_RUNS = 3  # Start with 3 to validate
+NUM_RUNS = 10  # Full 10-run comprehensive test
 
 # Expected results for validation
 EXPECTED_LINKEDIN = "https://www.linkedin.com/in/milan-kulh%C3%A1nek"
@@ -115,8 +115,8 @@ def evaluate_run_quality(run_data, run_number):
     email_body = result.get("email_body", "")
     follow_up_notes = result.get("follow_up_notes", "")
     
-    # Validated information
-    linkedin_profile = result.get("linkedin_profile_validated", "")
+    # Validated information  
+    linkedin_profile = result.get("validated_linkedin_profile", "")
     validated_title = result.get("validated_title", "")
     validated_country = result.get("validated_country", "")
     
@@ -161,13 +161,12 @@ def evaluate_run_quality(run_data, run_number):
         "country_found": bool(validated_country),
         "country_correct": EXPECTED_COUNTRY in validated_country if validated_country else False,
         
-        # Content analysis
+        # Content analysis - DYNAMIC SELLING INTENT VALIDATION
         "selling_intent_compliance": {
-            "coffee_mentioned": "coffee" in full_email.lower(),
-            "machine_mentioned": "machine" in full_email.lower(),
-            "facilities_mentioned": any(word in full_email.lower() for word in ["facilities", "consumption", "maintenance"]),
-            "sustainability_wrongly_mentioned": "sustainability" in full_email.lower(),
-            "generic_data_platform": "data platform" in full_email.lower() and "coffee" not in full_email.lower()
+            "intent_keywords_present": any(word in full_email.lower() for word in SELLING_INTENT.lower().split()),
+            "subject_contains_intent": any(word in subject_line.lower() for word in SELLING_INTENT.lower().split()),
+            "generic_forbidden_when_intent_provided": not any(word in full_email.lower() for word in ["data transformation", "operational efficiency", "analytics platform"]) if SELLING_INTENT else True,
+            "intent_properly_focused": SELLING_INTENT.lower().replace(" ", "") in full_email.lower().replace(" ", "") if SELLING_INTENT else True
         },
         
         # CTA analysis
@@ -231,7 +230,7 @@ def generate_summary_table(results):
     print(f"{'='*120}")
     
     # Header
-    print(f"{'Run':<3} {'Success':<7} {'Quality':<7} {'LinkedIn':<8} {'Title':<6} {'Country':<7} {'Coffee':<6} {'CTA':<8} {'Issues':<20}")
+    print(f"{'Run':<3} {'Success':<7} {'Quality':<7} {'LinkedIn':<8} {'Title':<6} {'Country':<7} {'Intent':<6} {'CTA':<8} {'Issues':<20}")
     print(f"{'-'*120}")
     
     # Results
@@ -244,20 +243,20 @@ def generate_summary_table(results):
         linkedin = "✅" if result["linkedin_correct"] else ("⚠️" if result["linkedin_found"] else "❌")
         title = "✅" if result["title_correct"] else ("⚠️" if result["title_found"] else "❌")
         country = "✅" if result["country_correct"] else ("⚠️" if result["country_found"] else "❌")
-        coffee = "✅" if result["selling_intent_compliance"]["coffee_mentioned"] else "❌"
+        intent = "✅" if result["selling_intent_compliance"]["intent_keywords_present"] else "❌"
         cta = "STRONG" if result["cta_analysis"]["strong_cta"] else ("WEAK" if result["cta_analysis"]["weak_cta"] else "NONE")
         
         issues = []
-        if result["selling_intent_compliance"]["sustainability_wrongly_mentioned"]:
-            issues.append("SUSTAIN")
-        if result["selling_intent_compliance"]["generic_data_platform"]:
+        if not result["selling_intent_compliance"]["intent_keywords_present"]:
+            issues.append("NO-INTENT")
+        if not result["selling_intent_compliance"]["generic_forbidden_when_intent_provided"]:
             issues.append("GENERIC")
-        if not result["selling_intent_compliance"]["coffee_mentioned"]:
-            issues.append("NO-COFFEE")
+        if not result["selling_intent_compliance"]["subject_contains_intent"]:
+            issues.append("NO-SUBJ")
         
         issues_str = ",".join(issues[:2])  # Limit to 2 issues for space
         
-        print(f"{result['run']:<3} {'✅':<7} {quality:<7} {linkedin:<8} {title:<6} {country:<7} {coffee:<6} {cta:<8} {issues_str:<20}")
+        print(f"{result['run']:<3} {'✅':<7} {quality:<7} {linkedin:<8} {title:<6} {country:<7} {intent:<6} {cta:<8} {issues_str:<20}")
     
     # Statistics
     successful_results = [r for r in results if r["success"]]
@@ -274,7 +273,7 @@ def generate_summary_table(results):
     linkedin_success = sum(1 for r in successful_results if r["linkedin_correct"]) / len(successful_results) * 100
     title_success = sum(1 for r in successful_results if r["title_correct"]) / len(successful_results) * 100
     country_success = sum(1 for r in successful_results if r["country_correct"]) / len(successful_results) * 100
-    coffee_compliance = sum(1 for r in successful_results if r["selling_intent_compliance"]["coffee_mentioned"]) / len(successful_results) * 100
+    intent_compliance = sum(1 for r in successful_results if r["selling_intent_compliance"]["intent_keywords_present"]) / len(successful_results) * 100
     strong_cta_rate = sum(1 for r in successful_results if r["cta_analysis"]["strong_cta"]) / len(successful_results) * 100
     
     avg_quality = sum(r["quality_score"]["total"] for r in successful_results) / len(successful_results)
@@ -284,18 +283,20 @@ def generate_summary_table(results):
     print(f"LinkedIn Validation:         {linkedin_success:.1f}%")
     print(f"Title Extraction:            {title_success:.1f}%")
     print(f"Country Detection:           {country_success:.1f}%")
-    print(f"Selling Intent Compliance:   {coffee_compliance:.1f}%")
+    print(f"Selling Intent Compliance:   {intent_compliance:.1f}%")
     print(f"Strong CTA Usage:           {strong_cta_rate:.1f}%")
     print(f"Average Quality Score:       {avg_quality:.1f}/100")
     print(f"Quality Acceptable (≥85):    {quality_acceptable:.1f}%")
     
     # Issue analysis
-    sustainability_issues = sum(1 for r in successful_results if r["selling_intent_compliance"]["sustainability_wrongly_mentioned"])
-    generic_issues = sum(1 for r in successful_results if r["selling_intent_compliance"]["generic_data_platform"])
+    intent_missing = sum(1 for r in successful_results if not r["selling_intent_compliance"]["intent_keywords_present"])
+    generic_when_intent = sum(1 for r in successful_results if not r["selling_intent_compliance"]["generic_forbidden_when_intent_provided"])
+    subject_missing_intent = sum(1 for r in successful_results if not r["selling_intent_compliance"]["subject_contains_intent"])
     
     print(f"\n🚨 ISSUE FREQUENCY:")
-    print(f"Sustainability instead of coffee: {sustainability_issues}/{len(successful_results)} runs")
-    print(f"Generic data platform messaging: {generic_issues}/{len(successful_results)} runs")
+    print(f"Missing selling intent keywords: {intent_missing}/{len(successful_results)} runs")
+    print(f"Generic messaging when intent provided: {generic_when_intent}/{len(successful_results)} runs")
+    print(f"Subject line missing intent keywords: {subject_missing_intent}/{len(successful_results)} runs")
     
     # Final assessment
     print(f"\n{'='*120}")
@@ -306,8 +307,8 @@ def generate_summary_table(results):
         print("❌ SYSTEM RELIABILITY: POOR - Too many failed runs")
     elif linkedin_success < 80:
         print("❌ LINKEDIN VALIDATION: FAILING - Not consistently finding correct profile")
-    elif coffee_compliance < 80:
-        print("❌ SELLING INTENT: FAILING - Not consistently focusing on coffee machine")
+    elif intent_compliance < 80:
+        print("❌ SELLING INTENT: FAILING - Not consistently using provided selling intent keywords")
     elif avg_quality < 85:
         print("⚠️  QUALITY: NEEDS IMPROVEMENT - Average quality below acceptable threshold")
     elif quality_acceptable < 80:
