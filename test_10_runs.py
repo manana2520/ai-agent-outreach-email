@@ -16,7 +16,7 @@ from sales_personalized_email.email_quality_validator import EmailQualityValidat
 # Test configuration
 AGENT_URL = "https://sales-personalized-email-agent.agentic.canary-orion.keboola.dev"
 API_TOKEN = "8b7c0e2c95b800efea4e75c1da209566e36cf371"
-NUM_RUNS = 3  # Quick validation test
+NUM_RUNS = 10  # Full 10-run consistency test
 
 # Expected results for validation
 EXPECTED_LINKEDIN = "https://www.linkedin.com/in/milan-kulh%C3%A1nek"
