@@ -1,0 +1,268 @@
+# Auto-Improving Personalized Sales Email Agent Specification
+
+## 1. Quality Scoring Rubric (100-Point System)
+
+### Structure Compliance (40 points)
+- **First Name Capitalized** (5 points): Must start with proper capitalization
+- **Achievement Recognition** (10 points): Specific achievement mentioned (8-10) or generic pleasing (6-7)
+- **Industry Context** (10 points): Keboola customer use case from similar industry
+- **Value Proposition** (10 points): How Keboola can help prospect's specific industry
+- **Call-to-Action** (5 points): Clear meeting request (demo or consulting)
+
+### Personalization Quality (30 points)
+- **LinkedIn Confidence** (15 points): 
+  - High confidence (90-100%): 15 points
+  - Medium confidence (70-89%): 12 points  
+  - Low confidence (<70%): 8 points
+- **Company Research Depth** (10 points): Company achievements, recent news, industry context
+- **Role Relevance** (5 points): Technical messaging for technical roles, business for business
+
+### Message Quality (30 points)
+- **Tone & Flow** (15 points): Professional, conversational, smooth transitions
+- **Length & Crispness** (10 points): 4-6 paragraphs, 120-180 words total
+- **Subject Line Impact** (5 points): Compelling, personalized, action-oriented
+
+## 2. Email Structure Template
+
+### High Confidence Template (LinkedIn confidence >85%)
+```
+Subject: [Specific Achievement] - How [Similar Company] Cut Data Costs 50%
+
+Hi [FirstName],
+
+Congratulations on [specific achievement from LinkedIn research]! [Brief context about why this achievement matters in their industry].
+
+We recently helped [Similar Industry Company] achieve [specific metric/outcome] using our data platform. [Brief 1-sentence description of the use case].
+
+Given your role at [Company] and focus on [specific area], I believe we could help you achieve similar results in [specific industry challenge/area].
+
+Would you be open to a brief 15-minute call to explore how this might apply to your situation?
+
+Best regards,
+[Name]
+```
+
+### Low Confidence Template (LinkedIn confidence <70%)
+```
+Subject: How [Industry] Leaders Are Cutting Data Tool Costs by 50%
+
+Hi [FirstName],
+
+I noticed [Company] is doing impressive work in [industry]. Companies like yours are often looking for ways to streamline their data operations.
+
+We recently helped [Similar Industry Company] achieve [specific metric] by consolidating their data stack. [Brief description of industry-relevant use case].
+
+Given [Company]'s position in [industry], I believe there could be similar opportunities to optimize your data operations.
+
+Would you be interested in a brief call to discuss how this might apply to your situation?
+
+Best regards,
+[Name]
+```
+
+## 3. Confidence Scoring System
+
+### LinkedIn Profile Validation (0-100%)
+- **Exact name + company match + recent activity**: 95-100%
+- **Exact name + company match + profile accessible**: 85-94%
+- **Name match + company context + some uncertainty**: 70-84%
+- **Common name + partial company match**: 50-69%
+- **No clear match found**: 0-49%
+
+### Title Discovery Confidence (0-100%)
+- **Explicitly stated on verified LinkedIn**: 95-100%
+- **Stated on company website or press release**: 85-94%
+- **Inferred from multiple consistent sources**: 70-84%
+- **Partial or outdated information**: 50-69%
+- **No title information found**: 0-49%
+
+### Country/Location Confidence (0-100%)
+- **LinkedIn location + company office match**: 95-100%
+- **LinkedIn location stated clearly**: 85-94%
+- **Company headquarters/office location**: 70-84%
+- **General region inferred**: 50-69%
+- **No location information**: 0-49%
+
+## 4. Industry-Specific Keboola Use Cases
+
+### Financial Services
+- **Customer**: Home Credit (consumer finance)
+- **Achievement**: 70% reduction in FP&A reporting time
+- **Technical**: Real-time risk assessment, automated compliance reporting
+- **Business**: Faster decision-making, reduced operational costs
+
+### Retail/E-commerce
+- **Customer**: Rohlik (online grocery), BRIX (fashion)
+- **Achievement**: 80% reduction in manual data processing
+- **Technical**: Inventory optimization, customer segmentation automation
+- **Business**: Improved margins, better customer experience
+
+### Logistics/Supply Chain
+- **Customer**: P3 Logistic Parks
+- **Achievement**: Unified data across 8 countries
+- **Technical**: IoT data integration, predictive maintenance
+- **Business**: Operational visibility, cost optimization
+
+### Manufacturing
+- **Achievement**: 50% reduction in data tool costs
+- **Technical**: Production line monitoring, quality control automation
+- **Business**: Improved efficiency, reduced downtime
+
+### Technology/SaaS
+- **Achievement**: Launch analytics projects in days vs months
+- **Technical**: Customer usage analytics, product optimization
+- **Business**: Faster time-to-market, data-driven decisions
+
+## 5. Auto-Improvement Loop Algorithm
+
+### Quality Assessment Function
+```python
+def calculate_email_quality_score(email_content, research_data, inputs):
+    score = 0
+    
+    # Structure Compliance (40 points)
+    score += check_first_name_capitalization(email_content, inputs) # 5 points
+    score += check_achievement_recognition(email_content, research_data) # 10 points
+    score += check_industry_context(email_content, inputs) # 10 points
+    score += check_value_proposition(email_content, inputs) # 10 points
+    score += check_call_to_action(email_content) # 5 points
+    
+    # Personalization Quality (30 points)
+    score += calculate_linkedin_confidence_points(research_data) # 15 points
+    score += check_company_research_depth(email_content, research_data) # 10 points
+    score += check_role_relevance(email_content, inputs) # 5 points
+    
+    # Message Quality (30 points)
+    score += check_tone_and_flow(email_content) # 15 points
+    score += check_length_and_crispness(email_content) # 10 points
+    score += check_subject_line(email_content, inputs) # 5 points
+    
+    return score
+```
+
+### Re-generation Triggers
+- **Score < 70**: Immediate regeneration with enhanced prompts
+- **Score 70-84**: Single optimization attempt
+- **Score ≥ 85**: Accept and log
+- **Maximum 3 regeneration attempts per email**
+
+### Prompt Optimization Rules
+1. **Low personalization scores**: Enhance LinkedIn research prompts
+2. **Poor structure scores**: Strengthen email format instructions  
+3. **Weak industry context**: Improve use case research prompts
+4. **Generic messaging**: Enhance achievement recognition prompts
+
+## 6. Agent Prompt Modifications
+
+### LinkedIn Research Agent Enhancement
+```
+Your confidence assessment must be numeric (0-100%) based on:
+- Exact name/company match + recent activity: 95-100%
+- Exact name/company match + accessible profile: 85-94%
+- Name match + company context + minor uncertainty: 70-84%
+- Common name + partial match: 50-69%
+- No clear match: 0-49%
+
+CRITICAL: Return numeric confidence scores for LinkedIn profile, title, and country.
+```
+
+### Achievement Recognition Agent Enhancement
+```
+PRIORITY ORDER for achievements:
+1. Recent promotions or role changes (within 6 months)
+2. Company awards, recognitions, certifications
+3. Published articles, speaking engagements
+4. Company milestones, funding rounds, expansions
+
+When LinkedIn confidence < 70%, focus on COMPANY achievements instead of personal ones.
+Provide specific, measurable achievements with context.
+```
+
+### Email Copywriter Agent Enhancement
+```
+MANDATORY EMAIL STRUCTURE:
+Paragraph 1: Hi [FirstName], [Achievement recognition - specific if confidence >70%, generic if <70%]
+Paragraph 2: We recently helped [Similar Industry Company] achieve [specific metric]. [Use case description].
+Paragraph 3: Given your role at [Company], I believe we could help you [specific benefit].
+Paragraph 4: Would you be open to a brief 15-minute call to explore this?
+Paragraph 5: Best regards, [Name]
+
+WORD COUNT: 120-180 words total
+CONFIDENCE HANDLING: Use specific achievements when LinkedIn confidence >70%, company-focused when <70%
+```
+
+## 7. Implementation Steps
+
+### Week 1: Foundation & Scoring System
+1. Implement `EmailQualityValidator` class
+2. Add confidence scoring to all agents
+3. Create email structure validation
+4. Build basic regeneration logic
+
+### Week 2: Auto-Improvement Loop
+1. Implement quality assessment algorithm
+2. Add regeneration triggers and limits
+3. Create prompt optimization system
+4. Build performance tracking
+
+### Week 3: Industry Specialization
+1. Add Keboola use case database
+2. Implement role-based messaging (technical vs business)
+3. Enhanced industry context prompts
+4. Customer story integration
+
+### Week 4: Production Deployment
+1. Integration testing with sample prospects
+2. Performance validation against quality metrics
+3. Monitoring and alerting setup
+4. Documentation and training
+
+## 8. Success Metrics
+
+### Quality KPIs
+- **Average Email Quality Score**: ≥85/100
+- **Regeneration Rate**: <20% of emails require regeneration
+- **Confidence Accuracy**: LinkedIn validation accuracy >90%
+- **Structure Compliance**: 100% of emails follow template
+
+### Performance KPIs
+- **Processing Time**: <3 minutes per email (including regenerations)
+- **API Success Rate**: >99% successful completions
+- **Error Rate**: <1% system errors
+
+### Business KPIs
+- **Response Rate**: Track email response rates (target baseline +20%)
+- **Meeting Booking Rate**: Track successful meeting bookings
+- **Quality Consistency**: Standard deviation of quality scores <10
+
+## 9. Testing Framework
+
+### Test Scenarios
+1. **High-confidence LinkedIn profile** (Milan Kulhanek, Deloitte)
+2. **Medium-confidence profile** (Common name, clear company)
+3. **Low-confidence profile** (No LinkedIn found)
+4. **Technical role** (CTO, Data Engineer)
+5. **Business role** (VP Sales, CMO)
+6. **Various industries** (Finance, Retail, Manufacturing)
+
+### Expected Outcomes
+- High confidence: Specific achievement recognition, score >85
+- Low confidence: Generic but professional messaging, score >70
+- Technical role: Technical use cases and terminology
+- Business role: Business value and ROI focus
+
+## 10. Monitoring & Maintenance
+
+### Automated Monitoring
+- Quality score distribution tracking
+- Regeneration pattern analysis
+- Confidence accuracy validation
+- Performance metric dashboards
+
+### Continuous Improvement
+- Monthly quality score analysis
+- Prompt effectiveness review
+- Industry use case updates
+- Customer feedback integration
+
+This specification ensures the email agent will automatically generate high-quality, personalized sales emails that meet all requirements while continuously improving its performance through automated quality assessment and optimization.
