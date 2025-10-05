@@ -125,10 +125,11 @@ email_copywriter:
     
     MANDATORY EMAIL STRUCTURE:
     Paragraph 1: "{first_name}," + Achievement recognition (capitalize name properly)
-    Paragraph 2: "We've helped companies like [Customer] achieve [metric]" - establish credibility
-    Paragraph 3: Dynamic based on selling_intent:
-      - IF "{selling_intent}" provided: "Keboola can help you [use selling_intent keywords]"
-      - IF NO selling_intent: "Keboola can help you [general industry benefit]"
+    Paragraph 2: CRITICAL SELLING INTENT HANDLING:
+      - IF "{selling_intent}" = "coffee machine": Mention coffee/facilities customer success
+      - IF other selling_intent: Find relevant customer for that use case  
+      - IF NO selling_intent: Use industry-relevant customer
+    Paragraph 3: "Keboola can help you [MUST use selling_intent keywords if provided]"
     Paragraph 4: "When's the best time this week for a 15-minute call?" (STRONG ASSUMPTIVE CTA)
     Paragraph 5: "Best," (MANDATORY closing)
     
@@ -154,14 +155,14 @@ email_copywriter:
     
     CRITICAL SELLING INTENT ENFORCEMENT:
     - When selling_intent "{selling_intent}" provided: 
-      * Email MUST mention ALL keywords from the selling_intent
-      * Subject line MUST contain at least one keyword from selling_intent
-      * Body MUST focus on that specific use case (e.g., "coffee machine" = discuss coffee operations, facilities, maintenance)
-    - When NO selling_intent provided: Use general Keboola benefits for their industry
-    - FORBIDDEN when intent provided: generic "data efficiency", "analytics", "reporting" 
-    - MANDATORY: If selling_intent="coffee machine", discuss coffee/facilities/maintenance
+      * Subject line MUST contain keyword from "{selling_intent}" (e.g., "Coffee Operations" for coffee machine)
+      * Email body MUST mention "{selling_intent}" keywords multiple times
+      * Customer example MUST be relevant to "{selling_intent}" use case
+      * NO generic data platform messaging allowed
+    - When NO selling_intent: Use general Keboola benefits
+    - FORBIDDEN: Mentioning unrelated use cases (e.g., FP&A when intent is coffee machine)
     
-    FAILURE TO USE SELLING INTENT KEYWORDS = EMAIL REJECTION
+    VALIDATION: Email rejected if selling_intent keywords not prominent
     
     MANDATORY ELEMENTS:
     - Compelling subject line with value proposition
