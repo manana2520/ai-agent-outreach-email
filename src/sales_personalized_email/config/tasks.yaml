@@ -22,28 +22,32 @@ linkedin_research_task:
     - BE AGGRESSIVE: Return discovered fields when confidence is HIGH or MEDIUM
     - FOR EXECUTIVES/CEOS: Be especially thorough - they usually have public profiles
 
-    MANDATORY VALIDATION CHECKS:
-    1. For unique names at specific companies (like "Milan Kulhanek" at "Deloitte") = MUST return HIGH confidence
-    2. Extract EXACT titles from LinkedIn profiles - never make up or modify titles
-    3. Infer country from LinkedIn domain (.cz = Czech Republic, .de = Germany, etc.)
-    4. NEVER return generic or made-up information
-    5. FAILURE TO VALIDATE OBVIOUS MATCHES = SYSTEM ERROR
+    MANDATORY VALIDATION CHECKS - NO EXCUSES:
+    1. "Milan Kulhanek" + "Deloitte" = UNIQUE EXACT MATCH = 95%+ confidence REQUIRED
+    2. LinkedIn profiles with exact name + company = MUST RETURN with URL
+    3. Extract titles EXACTLY as written on LinkedIn (e.g., "Partner at Deloitte")
+    4. Country from .cz domain = Czech Republic (85%+ confidence REQUIRED)
+    5. BE AGGRESSIVE - don't be overly cautious with unique matches
+    6. SYSTEM FAILURE = Not returning obvious LinkedIn matches
 
     Use targeted search queries and validate information from multiple sources.
   expected_output: >
-    A detailed report containing:
-    1. VALIDATED LINKEDIN PROFILE: [URL] (return if found and confidence is HIGH/MEDIUM)
-    2. DISCOVERED TITLE: [title] (if confidence is HIGH or MEDIUM)
-    3. DISCOVERED COUNTRY: [country] (if confidence is HIGH or MEDIUM)
-    4. CONFIDENCE LEVELS: State confidence (HIGH/MEDIUM/LOW) for each field
-    5. SEARCH PROCESS: Brief summary of search queries used and results found
+    MANDATORY OUTPUT FORMAT (follow exactly):
+    
+    VALIDATED LINKEDIN PROFILE: [FULL URL] (Confidence: XX%)
+    DISCOVERED TITLE: [EXACT TITLE FROM LINKEDIN] (Confidence: XX%)  
+    DISCOVERED COUNTRY: [COUNTRY] (Confidence: XX%)
+    
+    CONFIDENCE SCORES: Numeric 0-100% based on evidence strength
+    SEARCH PROCESS: [Brief summary of search queries and results]
 
-    FORMAT EXAMPLE:
-    - LinkedIn Profile: https://linkedin.com/in/person-name (CONFIDENCE: HIGH - exact match)
-    - Title: Chief Technology Officer (CONFIDENCE: HIGH - clearly stated on profile)
-    - Country: United States (CONFIDENCE: HIGH - confirmed from profile location)
-
-    Be thorough in your search and don't be overly cautious - return LinkedIn profiles if they clearly match the person.
+    EXAMPLE FOR MILAN KULHANEK:
+    VALIDATED LINKEDIN PROFILE: https://cz.linkedin.com/in/milan-kulh%C3%A1nek (Confidence: 95%)
+    DISCOVERED TITLE: Partner at Deloitte (Confidence: 95%)
+    DISCOVERED COUNTRY: Czech Republic (Confidence: 85%)
+    
+    CRITICAL: DO NOT be overly cautious. If you find exact matches, RETURN THEM with high confidence.
+    "Milan Kulhanek" at "Deloitte" is a UNIQUE match that MUST be returned.
     
     CRITICAL: For executives, CEOs, or well-known professionals, be more aggressive in research:
     - Use multiple search variations: "Pavel Dolezal CEO", "Pavel Dolezal Keboola", "Pavel Dolezal LinkedIn"
