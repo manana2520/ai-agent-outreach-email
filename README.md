@@ -42,9 +42,62 @@ or
 uv run sales_personalized_email
 ```
 
-This command initializes the sales-personalized-email Crew, assembling the agents and assigning them tasks as defined in your configuration.
+### Dynamic Selling Intent Feature
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+The agent now supports **dynamic selling intent** - you can specify ANY use case and the email will focus on it:
+
+```bash
+# Example with coffee machine use case
+uv run python src/sales_personalized_email/main.py \
+  --first_name "Milan" \
+  --last_name "Kulhanek" \
+  --company "Deloitte" \
+  --selling_intent "coffee machine"
+
+# Example with CRM use case
+uv run python src/sales_personalized_email/main.py \
+  --first_name "John" \
+  --last_name "Doe" \
+  --company "Acme Corp" \
+  --selling_intent "CRM integration"
+
+# Example with no selling intent (uses general Keboola benefits)
+uv run python src/sales_personalized_email/main.py \
+  --first_name "Jane" \
+  --last_name "Smith" \
+  --company "TechCorp"
+```
+
+**Key Features:**
+- ✅ NO hardcoded use cases - fully dynamic
+- ✅ Subject line includes selling intent keywords
+- ✅ Email body focuses exclusively on specified use case
+- ✅ Falls back to general industry benefits when no intent provided
+- ✅ Strong assumptive CTAs ("When's the best time..." not "Would you be open...")
+
+### Cloud Deployment
+
+The agent is deployed at:
+```
+https://sales-personalized-email-agent.agentic.canary-orion.keboola.dev
+```
+
+Test with curl:
+```bash
+curl -X POST "https://sales-personalized-email-agent.agentic.canary-orion.keboola.dev/kickoff" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "crew": "sales_personalized_email",
+    "inputs": {
+      "first_name": "Milan",
+      "last_name": "Kulhanek",
+      "title": "",
+      "company": "Deloitte",
+      "selling_intent": "coffee machine"
+    }
+  }'
+```
 
 ## Understanding Your Crew
 
