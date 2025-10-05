@@ -133,7 +133,7 @@ write_email_task:
     1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)
     2. Connection: "We've helped companies like [Customer] achieve [result]" - establish credibility with customer reference
     3. Confident solution statement: If selling_intent provided, focus on how Keboola addresses THAT SPECIFIC USE CASE. If no selling_intent, general partnership benefits.
-    4. Call-to-action: Direct ask for a brief call/meeting (one sentence, confident)
+    4. Call-to-action: Assumptive CTA that assumes interest and asks for timing (avoid "Would you be open to..." - instead use "When's the best time for..." or "Are you free Tuesday or Wednesday for...")
     5. Closing: MANDATORY - End with "Best," on a new line (automation will add signature)
 
     CRITICAL: The email MUST end with a closing. The final line of the email must be "Best,"
@@ -156,7 +156,7 @@ write_email_task:
     
     Keboola can help you [address specific use case OR general partnership benefits].
     
-    [CTA question]?
+    When's the best time this week for a 15-minute call?
     
     Best,
 
@@ -191,10 +191,16 @@ write_email_task:
     - Assumptions about their challenges
     - Problem-focused language
     - Condescending tone
-    - Weak language like "I'd love to explore" or "would you like to discuss" 
+    - Weak CTAs like "Would you be open to..." or "Are you interested in..." - these invite rejection
+    - Permission-seeking language like "I'd love to explore" or "would you like to discuss"
     - Implementation language like "implementing Keboola" - focus on company partnership instead
-    - Asking permission - be confident in your solution offering
     - Forgetting the mandatory closing "Best," on final line
+    
+    STRONG CTA EXAMPLES:
+    - "When's the best time this week for a 15-minute call?"
+    - "Are you free Tuesday or Wednesday for a quick conversation?"
+    - "What's your availability for a brief call next week?"
+    - "When can we discuss how this applies to your [specific use case]?"
 
     WRITING STYLE:
     - Short sentences (10-15 words max)

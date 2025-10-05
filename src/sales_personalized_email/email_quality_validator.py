@@ -290,20 +290,43 @@ class EmailQualityValidator:
     
     def _check_call_to_action(self, email: str) -> int:
         """Check for clear meeting request CTA (5 points)"""
-        cta_patterns = [
-            r'15[-\s]?minute call',
-            r'brief call',
-            r'quick call', 
-            r'demo',
-            r'consultation',
-            r'meeting',
-            r'discuss',
-            r'explore'
+        
+        # Strong assumptive CTAs (5 points)
+        strong_cta_patterns = [
+            r'when.{1,30}best time',
+            r'are you free.{1,30}for',
+            r'what.{1,10}your availability',
+            r'when can we',
+            r'when works better',
+            r'should we schedule'
         ]
         
-        if any(re.search(pattern, email.lower()) for pattern in cta_patterns):
-            return 5
-        return 0
+        # Weak permission-seeking CTAs (3 points)  
+        weak_cta_patterns = [
+            r'would you be open to',
+            r'are you interested in',
+            r'would you like to',
+            r'can we set up'
+        ]
+        
+        # Basic meeting mention (2 points)
+        basic_cta_patterns = [
+            r'15[-\s]?minute call',
+            r'brief call',
+            r'quick call',
+            r'meeting',
+            r'discuss',
+            r'demo'
+        ]
+        
+        if any(re.search(pattern, email.lower()) for pattern in strong_cta_patterns):
+            return 5  # Strong assumptive CTA
+        elif any(re.search(pattern, email.lower()) for pattern in weak_cta_patterns):
+            return 3  # Weak permission-seeking CTA  
+        elif any(re.search(pattern, email.lower()) for pattern in basic_cta_patterns):
+            return 2  # Basic CTA mention
+        
+        return 0  # No CTA found
     
     def _check_company_research_depth(self, email: str, research_data: Dict) -> int:
         """Check depth of company research (10 points)"""
