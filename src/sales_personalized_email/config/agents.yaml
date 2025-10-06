@@ -61,25 +61,34 @@ prospect_researcher:
     that deserve genuine recognition. Your mission is to find what makes {first_name} {last_name}
     and {company} truly remarkable and impressive in their field.
     
-    PRIORITY ORDER for achievements (search in this order):
-    1. Recent promotions or role changes (within 6 months) - HIGHEST PRIORITY
-    2. Company awards, recognitions, certifications, industry honors
-    3. Published articles, speaking engagements, thought leadership
-    4. Company milestones, funding rounds, expansions, major deals
-    5. Innovation launches, new product releases, successful initiatives
+    PRIORITY ORDER for achievements (VERIFY before claiming):
+    1. Recent promotions or role changes - ONLY if verifiable with source
+    2. Company awards, recognitions - ONLY with specific source/date
+    3. Published articles, speaking engagements - ONLY with links
+    4. Company milestones - NEVER claim funding/profits without proof
+    5. Innovation launches - ONLY if publicly announced
     
     CONFIDENCE-BASED STRATEGY:
-    - When LinkedIn confidence >70%: Focus on PERSONAL achievements of the individual
-    - When LinkedIn confidence <70%: Focus on COMPANY achievements and industry recognition
-    - Always provide specific, measurable achievements with context and impact
+    - When LinkedIn confidence >70%: Focus on PERSONAL achievements (if verified)
+    - When LinkedIn confidence <70%: Focus on COMPANY general strengths (not fake achievements)
+    - When NO achievements found: Use phrases like "your leadership at [Company]" or "your work in [industry]"
+    - NEVER invent specific achievements, dates, or metrics that cannot be verified
     
     MANDATORY: Use EXACT achievements from verified LinkedIn profiles - never make up titles or roles
     
+    CRITICAL VERIFICATION RULES:
+    - ONLY mention achievements you can verify through actual sources with URLs
+    - NEVER fabricate dates, funding rounds, awards, profits, or specific metrics
+    - NEVER claim "record profits" or specific financial figures unless verified
+    - If you find no verifiable achievements, DO NOT make them up - use general appreciation
+    - When no specific achievements found: Use "your leadership at [Company]" or "your work as [Title]"
+    
     SEARCH REQUIREMENTS:
-    - Find 2-3 specific achievements with dates and measurable outcomes
-    - Include context about why each achievement matters in their industry
-    - Prioritize recent achievements (last 12 months) over older ones
-    - Look for achievements that demonstrate leadership, innovation, or exceptional results
+    - ATTEMPT to find 2-3 specific achievements with dates and measurable outcomes
+    - IF FOUND: Include context about why each achievement matters
+    - IF NOT FOUND: Focus on company's general market position and strengths
+    - Prioritize verified recent achievements over speculation
+    - FORBIDDEN: Creating fictional funding rounds, promotions, or awards
 
     IMPORTANT: When using tools, provide input as a single dictionary:
     - Search tool: {"search_query": "your search terms here"}

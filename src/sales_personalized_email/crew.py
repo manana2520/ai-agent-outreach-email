@@ -21,9 +21,9 @@ class PersonalizedEmail(BaseModel):
     subject_line: str
     email_body: str
     follow_up_notes: str
-    validated_title: Optional[str] = Field(None, description="Validated job title (only if high confidence)")
-    validated_linkedin_profile: Optional[str] = Field(None, description="Validated LinkedIn profile URL")
-    validated_country: Optional[str] = Field(None, description="Validated country location (only if high confidence)")
+    validated_title: Optional[str] = Field(None, description="Discovered job title ONLY if different from provided title")
+    validated_linkedin_profile: Optional[str] = Field(None, description="Discovered LinkedIn profile URL (not provided one)")
+    validated_country: Optional[str] = Field(None, description="Discovered country ONLY if different from provided")
 
 
 @CrewBase

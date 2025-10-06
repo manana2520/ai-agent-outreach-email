@@ -60,12 +60,12 @@ research_prospect_task:
     Research {first_name} {last_name} and {company} to discover their remarkable achievements, 
     successes, and impressive initiatives that deserve genuine recognition and appreciation.
 
-    RESEARCH PRIORITIES (find achievements first):
-    1. {first_name}'s notable career accomplishments, awards, recognitions, or leadership achievements
-    2. {company}'s impressive results, growth milestones, awards, or industry recognition
-    3. Recent initiatives, programs, or innovations they've launched that show excellence
-    4. Unique aspects of their organization that set them apart from peers
-    5. Any impressive metrics, outcomes, or impact they've achieved
+    RESEARCH PRIORITIES (verify before claiming):
+    1. SEARCH for {first_name}'s career accomplishments - BUT ONLY mention if verifiable
+    2. SEARCH for {company}'s milestones - BUT NEVER invent funding rounds or specific dates
+    3. LOOK for recent initiatives - BUT if none found, don't fabricate them
+    4. IDENTIFY unique aspects - BUT use general descriptions if specifics unavailable
+    5. FIND metrics if available - BUT NEVER make up numbers or percentages
 
     SECONDARY RESEARCH (after finding achievements):
     6. Current role responsibilities and scope
@@ -74,9 +74,10 @@ research_prospect_task:
 
     RESEARCH APPROACH:
     - Look for success stories, not just basic information
-    - Find specific achievements worth congratulating
-    - Identify what makes them/their organization special
-    - Focus on positive accomplishments and innovations
+    - Find specific achievements worth congratulating IF they exist
+    - If NO specific achievements found: Focus on their role and company presence
+    - NEVER fabricate: funding rounds, specific years, awards, or metrics
+    - When uncertain: Use general appreciation like "your leadership" or "your work"
 
     Important: When using tools, provide input as single dictionaries only:
     - Search: {"search_query": "your query"}  
@@ -121,12 +122,15 @@ personalize_content_task:
     
     IMPORTANT: Do NOT make assumptions about their industry or challenges. 
     Base everything on the actual research findings about their specific achievements.
-    NEVER assume company names indicate specific industries (e.g., "Walker" doesn't mean coffee, generic names don't mean education).
+    CRITICAL: If you cannot verify specific achievements, DO NOT make them up.
+    Use general appreciation instead: "your leadership," "your work at [Company]," "your role as [Title]"
+    NEVER claim specific events (funding, awards, promotions) unless 100% verified.
+    NEVER assume company names indicate specific industries.
     If the company/industry is unclear and no selling_intent provided, keep messaging general about data and analytics.
   expected_output: >
     3 talking points that start with genuine appreciation:
     
-    1. [Specific achievement or success worthy of recognition - be genuine and specific]
+    1. [Specific achievement IF VERIFIED - otherwise use "your leadership at {company}" or role-based appreciation]
     2. [What makes their organization impressive or unique based on research]
     3. [DYNAMIC SELLING INTENT HANDLING:
        - IF selling_intent "{selling_intent}" is provided: Focus EXCLUSIVELY on this exact use case with Keboola solutions
@@ -136,7 +140,7 @@ personalize_content_task:
 write_email_task:
   description: >
     Write an appreciative, respectful email to {first_name} {last_name} that starts with genuine
-    recognition of their specific achievements before sharing how Keboola helps similar successful organizations.
+    recognition - either specific verified achievements OR general role appreciation if no achievements found.
     
     CRITICAL: SELLING INTENT "{selling_intent}" ENFORCEMENT:
     When selling_intent is provided, you MUST use those exact keywords throughout the email.
@@ -145,7 +149,10 @@ write_email_task:
     NEVER make industry assumptions based on company names alone - research actual industry first.
 
     EMAIL STRUCTURE (Maximum 120 words):
-    1. Personal opening: "{first_name}, [specific appreciation]" (CAPITALIZE first name properly, be authentic but brief)
+    1. Personal opening: "{first_name}, [appreciation]" 
+       - IF achievements verified: mention them specifically
+       - IF NO achievements found: use "your leadership at {company}" or "your work as {title}"
+       - NEVER invent funding rounds, awards, or specific dates
     2. Connection: "We've helped companies like [Customer] achieve [result]" - establish credibility with customer reference
     3. Confident solution statement: 
        - IF selling_intent "{selling_intent}" provided: Focus on how Keboola addresses THAT SPECIFIC USE CASE using keywords from the intent
@@ -194,7 +201,9 @@ write_email_task:
     CRITICAL REQUIREMENTS:
     - Base appreciation on actual research findings, not assumptions
     - NO generic industry statements or hardcoded challenges
-    - Be specific about their achievements 
+    - Be specific about achievements ONLY if verified
+    - If no verified achievements: Use general professional appreciation
+    - FORBIDDEN: Mentioning unverified funding, awards, promotions, or dates 
     - Use REAL Keboola customer names and quantified results from website research
     - NEVER use placeholders like "[Customer Name]" or "[Keboola Customer]"
 
@@ -225,9 +234,11 @@ write_email_task:
 
     IMPORTANT: Extract validated prospect information from previous research tasks and include
     in the final output. Look for validated information in the LinkedIn research report and include:
-    - validated_linkedin_profile: Include if found (HIGH or MEDIUM confidence)
-    - validated_title: Include if found with HIGH confidence
-    - validated_country: Include if found with HIGH confidence
+    - validated_linkedin_profile: Include ONLY if found/discovered (not the one provided)
+    - validated_title: Include ONLY if DIFFERENT from provided title (discovered through research)
+    - validated_country: Include ONLY if DIFFERENT from provided country (discovered through research)
+    
+    CRITICAL: Do NOT return validated fields that are same as inputs - only return if you discovered different/new information
 
     Parse the LinkedIn research report carefully and extract any discovered information with sufficient confidence.
   expected_output: >
@@ -237,7 +248,7 @@ write_email_task:
     3. Concise follow-up notes for the sales person with key talking points
     
     CRITICAL: The email_body MUST end with "Best," on a separate line.
-    4. validated_title: Job title (only if HIGH confidence from research)
-    5. validated_linkedin_profile: LinkedIn profile URL (if found/validated)
-    6. validated_country: Country location (only if HIGH confidence from research)
+    4. validated_title: Job title ONLY if different from provided (discovered through research, not echoing input)
+    5. validated_linkedin_profile: LinkedIn profile URL ONLY if found/discovered (not echoing provided URL)
+    6. validated_country: Country ONLY if different from provided (discovered through research)
     
