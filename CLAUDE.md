@@ -24,7 +24,49 @@ This is a CrewAI-based sales personalized email generator that uses multiple AI 
 - `streamlit run streamlit_app/app.py` - Start the web interface
 - The app provides both cloud and local runner modes for agent execution
 
-### Deployment Scripts
+### Auto-Improvement System
+
+### Running Auto-Improvement
+```bash
+# Full auto-improvement cycle (tests, analyzes, adapts prompts)
+python auto_improve_crew.py --max-iterations 10 --target-pass-rate 0.95 --num-prospects 20
+
+# Test current crew without adapting
+python auto_improve_crew.py --test-only --num-prospects 20
+
+# Custom configuration
+python auto_improve_crew.py --max-iterations 15 --target-pass-rate 0.97 --num-prospects 30 --output-report my_report.json
+```
+
+### System Overview
+The auto-improvement system automatically tests, analyzes failures, and adapts agent prompts to achieve 95% pass rate:
+1. **Prospect Generator**: Creates 20 diverse test prospects (random industries, roles, selling intents)
+2. **Test Runner**: Executes crew and validates outputs (85+ quality score required)
+3. **Failure Analyzer**: LLM-powered root cause analysis
+4. **Prompt Adapter**: Generates and applies prompt improvements to agents.yaml and tasks.yaml
+5. **Orchestrator**: Iterates until 95% pass rate achieved
+
+### Quality Requirements (All Must Pass)
+- Total quality score ≥ 85/100
+- Intent compliance ≥ 12/15 (when selling_intent provided)
+- First name properly capitalized
+- CTA present (score ≥ 3/5)
+- No generic messaging when specific intent provided
+
+### Performance
+- **Iteration Time**: 15-25 minutes (20 prospects)
+- **Convergence**: 3-5 iterations typical (70% → 95%)
+- **Total Runtime**: 1-2 hours
+- **Cost**: ~$20-40 in API calls
+
+### Output Artifacts
+- `prompt_backups/`: Original prompt backups
+- `improvement_logs/`: Detailed iteration logs
+- `auto_improvement_report.json`: Final report with pass rates and improvements
+
+See `AUTO_IMPROVEMENT_SPEC.md` and `AUTO_IMPROVEMENT_IMPLEMENTATION_PLAN.md` for full details.
+
+## Deployment Scripts
 - `./deployment/deploy_and_run_agent_locally.sh` - Deploy to local Kubernetes with full monitoring
 - `./scripts/start-local-k8-platform-port-forward.sh` - Start port forwarding for platform API
 - `./scripts/run-streamlit-app.sh` - Run Streamlit interface
